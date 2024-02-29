@@ -86,6 +86,8 @@ open import terms2(W)(C)(K)(G)(X)(N)(EC)
   using (NATREC⇓)
 open import terms3(W)(C)(K)(G)(X)(N)(EC)
 open import terms8(W)(C)(K)(G)(X)(N)(EC)
+open import terms9
+  using (#[1]SQUASH ; #[1]UNION)
 
 open import props1(W)(M)(C)(K)(G)(X)(N)(EC)
   using (TSext-equalTypes-equalInType)
@@ -129,8 +131,28 @@ open import lem_props(W)(M)(C)(K)(G)(X)(N)(EC)
 #[0]UNION! a b = #[0]NOWRITEMOD (#[0]NOREADMOD (#[0]UNION a b))
 
 
+#[1]UNION! : CTerm1 → CTerm1 → CTerm1
+#[1]UNION! a b = #[1]NOWRITEMOD (#[1]NOREADMOD (#[1]UNION a b))
+
+
 ≡UNION! : {a b c d : Term} → a ≡ b → c ≡ d → UNION! a c ≡ UNION! b d
 ≡UNION! {a} {b} {c} {d} e f rewrite e | f = refl
+
+
+OR! : Term → Term → Term
+OR! a b = SQUASH (UNION! a b)
+
+
+#OR! : CTerm → CTerm → CTerm
+#OR! a b = #SQUASH (#UNION! a b)
+
+
+#[0]OR! : CTerm0 → CTerm0 → CTerm0
+#[0]OR! a b = #[0]SQUASH (#[0]UNION! a b)
+
+
+#[1]OR! : CTerm1 → CTerm1 → CTerm1
+#[1]OR! a b = #[1]SQUASH (#[1]UNION! a b)
 
 
 -- π (F : ℕ → 𝔹). ¬(Π (n : ℕ). ¬(F n ≡ true)) → ||Σ (n : ℕ). F n ≡ true||

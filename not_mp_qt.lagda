@@ -18,19 +18,6 @@ open import Data.Maybe
 open import Data.Unit using (⊤ ; tt)
 open import Data.Nat using (ℕ ; _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_ ; pred)
 open import Data.Nat.Properties
-open import Agda.Builtin.String
-open import Agda.Builtin.String.Properties
-open import Data.List
-open import Data.List.Properties
-open import Data.List.Relation.Unary.Any
-open import Data.List.Relation.Binary.Subset.Propositional
-open import Data.List.Relation.Binary.Subset.Propositional.Properties
-open import Data.List.Membership.Propositional
-open import Data.List.Membership.DecSetoid(≡-decSetoid) using (_∈?_)
-open import Data.List.Membership.Propositional.Properties
-open import Function.Bundles
-open import Induction.WellFounded
-open import Axiom.Extensionality.Propositional
 
 
 open import util
@@ -52,14 +39,19 @@ open import mod
 open import encode
 
 
-module not_mp_qt {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
-                 (C : Choice) (K : Compatible W C) (P : Progress {L} W C K)
-                 (G : GetChoice {L} W C K) (X : ChoiceExt {L} W C)
+module not_mp_qt {L  : Level}
+                 (W  : PossibleWorlds {L})
+                 (M  : Mod W)
+                 (C  : Choice)
+                 (K  : Compatible W C)
+                 (P  : Progress {L} W C K)
+                 (G  : GetChoice {L} W C K)
+                 (X  : ChoiceExt {L} W C)
                  (EC : Encode)
-                 (N : NewChoice {L} W C K G) (V : ChoiceVal W C K G X N EC)
-                 (F : Freeze {L} W C K P G N)
-                 (E : Extensionality 0ℓ (lsuc(lsuc(L))))
-                 (CB : ChoiceBar W M C K P G X N EC V F E)
+                 (N  : NewChoice {L} W C K G)
+                 (V  : ChoiceVal W C K G X N EC)
+                 (F  : Freeze {L} W C K P G N)
+                 (CB : ChoiceBar W M C K P G X N EC V F)
        where
 
 
@@ -74,27 +66,43 @@ open import freezeDef(W)(C)(K)(P)(G)(N)(F)
 open import computation(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import forcing(W)(M)(C)(K)(G)(X)(N)(EC)
+open import props0(W)(M)(C)(K)(G)(X)(N)(EC)
+  using (eqTypes-mon)
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import terms8(W)(C)(K)(G)(X)(N)(EC)
+  using (SUM! ; #SUM! ; UNION! ; #UNION!)
 
-open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
-open import not_lem(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
-open import typeC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
-open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
-open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import not_mp(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
+open import props2(W)(M)(C)(K)(G)(X)(N)(EC)
+  using (equalInType-QNAT!→ ; ≡CTerm→equalInType ; equalInType-FUN ; eqTypesEQ← ; NUM-equalInType-QNAT! ;
+         equalInType-refl ; ≡CTerm→eqTypes ; equalInType-mon ; →≡equalInType ; equalInType-NEG)
+open import props3(W)(M)(C)(K)(G)(X)(N)(EC)
+  using (→equalInType-BOOL! ; eqTypesQNAT! ; isTypeBOOL! ; BTRUE∈BOOL! ; sub0-ASSERT₃-APPLY ; equalTypes→equalInType ;
+         equalInType-EQ→₁)
+open import lem_props(W)(M)(C)(K)(G)(X)(N)(EC)
+  using (#QNAT!→BOOL! ; #QNAT!→BOOL!≡ ; →#APPLY-#CS#⇛ℂ→C· ; #SUM-ASSERT₄)
+
+open import props6(W)(M)(C)(K)(G)(X)(N)(EC)
+  using (equalInType-SUM! ; SUMeq! ; equalInType-SUM!→)
+
+open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
+open import not_lem(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
+  using (sub0-#Σchoice-body≡ ; getChoice→equalInType-#Σchoice-aux1)
+open import typeC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
+  using (Resℂ ; sat→equalInType-Typeℂ₀₁·)
+open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
+  using (Bool!ℂ ; equalTypes-BOOL!-Typeℂ₀₁)
+open import mp_props(W)(M)(C)(K)(G)(X)(N)(EC)
+  using (isType-MP-right-qt₂-body ; #MP₅ ; isTypeMP₅)
+open import mp_props2(W)(M)(C)(K)(G)(X)(N)(EC)
+  using (∈#MP₅→)
 
 
-#QTNAT!→T : CTerm → CTerm
-#QTNAT!→T T = #FUN #QTNAT! T
+#QNAT!→T : CTerm → CTerm
+#QNAT!→T T = #FUN #QNAT! T
 
 
+-- This requires the choices to be either ℂ₁ or ℂ₀
 cℂ : Set(lsuc(L))
 cℂ = (c : Name) (r : Res) (w : 𝕎·) (n : ℕ)
       → compatible· c w r
@@ -103,7 +111,7 @@ cℂ = (c : Name) (r : Res) (w : 𝕎·) (n : ℕ)
 
 -- It seems that this would only be true with references because we don't have to jump to where 'a' is defined at 'n'
 -- and can then use cℂ above
-⇓!sameℕ→#⇓!same-bool : (cb : QTBoolℂ CB) (cc : cℂ) (w : 𝕎·) (t1 t2 : CTerm) (a : Name)
+⇓!sameℕ→#⇓!same-bool : (cb : Bool!ℂ CB) (cc : cℂ) (w : 𝕎·) (t1 t2 : CTerm) (a : Name)
                          → compatible· a w Resℂ
                          → ⇓!sameℕ w ⌜ t1 ⌝ ⌜ t2 ⌝
                          → #⇓!same-bool w (#APPLY (#CS a) t1) (#APPLY (#CS a) t2)
@@ -131,7 +139,7 @@ cℂ = (c : Name) (r : Res) (w : 𝕎·) (n : ℕ)
 -- the covering in the hypothesis?
 -- I'm not sure how because those numbers could always be just above the coverings they are associated with, which
 -- means that we would end up having to increase the coverings infinitely often...
-□⇓!sameℕ→#⇓!same-bool : (cb : QTBoolℂ CB) (cc : cℂ) {w : 𝕎·} {c : Name} {a₁ a₂ : CTerm}
+□⇓!sameℕ→#⇓!same-bool : (cb : Bool!ℂ CB) (cc : cℂ) {w : 𝕎·} {c : Name} {a₁ a₂ : CTerm}
                              → compatible· c w Resℂ
                              → □· w (λ w' _ → Lift (lsuc(L)) (⇓!sameℕ w' ⌜ a₁ ⌝ ⌜ a₂ ⌝))
                              → □· w (λ w' _ → Lift (lsuc(L)) (#⇓!same-bool w' (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂)))
@@ -143,39 +151,39 @@ cℂ = (c : Name) (r : Res) (w : 𝕎·) (n : ℕ)
     aw1 w1 e1 wm = lift (⇓!sameℕ→#⇓!same-bool cb cc w1 a₁ a₂ c (⊑-compatible· e1 compat) (lower wm))
 
 
-→equalInType-APPLY-CS-QTBOOL!-qt : (cb : QTBoolℂ CB) (cc : cℂ) {i : ℕ} {w : 𝕎·} {c : Name} {a₁ a₂ : CTerm}
+→equalInType-APPLY-CS-QTBOOL!-qt : (cb : Bool!ℂ CB) (cc : cℂ) {i : ℕ} {w : 𝕎·} {c : Name} {a₁ a₂ : CTerm}
                                   → compatible· c w Resℂ
-                                  → equalInType i w #QTNAT! a₁ a₂
-                                  → equalInType i w #QTBOOL! (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂)
+                                  → equalInType i w #QNAT! a₁ a₂
+                                  → equalInType i w #BOOL! (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂)
 →equalInType-APPLY-CS-QTBOOL!-qt cb cc {i} {w} {c} {a₁} {a₂} compat ea =
-  →equalInType-QTBOOL!
+  →equalInType-BOOL!
     i w (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂)
     (Mod.→□∀𝕎 M (□⇓!sameℕ→#⇓!same-bool
                     cb cc {w} {c} {a₁} {a₂} compat
-                    (□#weakMonEq!→□#⇓!sameℕ w a₁ a₂ (equalInType-QTNAT!→ i w a₁ a₂ ea))))
+                    (□#weakMonEq!→□#⇓!sameℕ w a₁ a₂ (equalInType-QNAT!→ i w a₁ a₂ ea))))
 
 
-→equalInType-APPLY-CS-Typeℂ₀₁-qt : (cb : QTBoolℂ CB) (cc : cℂ) {i : ℕ} {w : 𝕎·} {c : Name} {a₁ a₂ : CTerm}
+→equalInType-APPLY-CS-Typeℂ₀₁-qt : (cb : Bool!ℂ CB) (cc : cℂ) {i : ℕ} {w : 𝕎·} {c : Name} {a₁ a₂ : CTerm}
                                   → compatible· c w Resℂ
-                                  → equalInType i w #QTNAT! a₁ a₂
+                                  → equalInType i w #QNAT! a₁ a₂
                                   → equalInType i w Typeℂ₀₁· (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂)
 →equalInType-APPLY-CS-Typeℂ₀₁-qt cb cc {i} {w} {c} {a₁} {a₂} compat ea =
   ≡CTerm→equalInType (sym (fst cb)) (→equalInType-APPLY-CS-QTBOOL!-qt cb cc compat ea)
 
 
-→equalInType-CS-QTNAT!→QTBOOL! : (cb : QTBoolℂ CB) (cc : cℂ) {n : ℕ} {w : 𝕎·} {a : Name}
-                                   → compatible· a w Resℂ
-                                   → ∈Type n w (#QTNAT!→QTBOOL!) (#CS a)
-→equalInType-CS-QTNAT!→QTBOOL! cb cc {n} {w} {a} compat =
-  ≡CTerm→equalInType (sym #QTNAT!→QTBOOL!≡) (equalInType-FUN eqTypesQTNAT! (eqTypesQTBOOL! {w} {n}) aw)
+→equalInType-CS-QNAT!→BOOL! : (cb : Bool!ℂ CB) (cc : cℂ) {n : ℕ} {w : 𝕎·} {a : Name}
+                            → compatible· a w Resℂ
+                            → ∈Type n w (#QNAT!→BOOL!) (#CS a)
+→equalInType-CS-QNAT!→BOOL! cb cc {n} {w} {a} compat =
+  ≡CTerm→equalInType (sym #QNAT!→BOOL!≡) (equalInType-FUN eqTypesQNAT! (isTypeBOOL! w n) aw)
   where
-    aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' #QTNAT! a₁ a₂
-                      → equalInType n w' #QTBOOL! (#APPLY (#CS a) a₁) (#APPLY (#CS a) a₂))
+    aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' #QNAT! a₁ a₂
+                      → equalInType n w' #BOOL! (#APPLY (#CS a) a₁) (#APPLY (#CS a) a₂))
     aw w1 e1 a₁ a₂ ea = →equalInType-APPLY-CS-QTBOOL!-qt cb cc (⊑-compatible· e1 compat) ea
 
 
 Σchoice-qt : (n : Name) (k : ℂ·) → Term
-Σchoice-qt n k = SUM QTNAT! (EQ (APPLY (CS n) (VAR 0)) (ℂ→T k) typeℂ₀₁)
+Σchoice-qt n k = SUM! QNAT! (EQ (APPLY (CS n) (VAR 0)) (ℂ→T k) typeℂ₀₁)
 
 
 #Σchoice-qt : (n : Name) (k : ℂ·) → CTerm
@@ -185,15 +193,16 @@ cℂ = (c : Name) (r : Res) (w : 𝕎·) (n : ℕ)
     c rewrite #-typeℂ₀₁ | #-ℂ→T k = refl
 
 
-#Σchoice-qt≡ : (n : Name) (k : ℂ·) → #Σchoice-qt n k ≡ #SUM #QTNAT! (#[0]EQ (#[0]APPLY (#[0]CS n) #[0]VAR) (ℂ→C0 k) #[0]Typeℂ₀₁)
+#Σchoice-qt≡ : (n : Name) (k : ℂ·)
+             → #Σchoice-qt n k ≡ #SUM! #QNAT! (#[0]EQ (#[0]APPLY (#[0]CS n) #[0]VAR) (ℂ→C0 k) #[0]Typeℂ₀₁)
 #Σchoice-qt≡ n k = CTerm≡ refl
 
 
-equalTypes-#Σchoice-qt-body : (cb : QTBoolℂ CB) (cc : cℂ) (i : ℕ) (w : 𝕎·) (c : Name) (k : ℂ·)
+equalTypes-#Σchoice-qt-body : (cb : Bool!ℂ CB) (cc : cℂ) (i : ℕ) (w : 𝕎·) (c : Name) (k : ℂ·)
                            → compatible· c w Resℂ
                            → Σ ℕ (λ n → ·ᵣ Resℂ n k)
                            → ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm)
-                                           → equalInType i w' #QTNAT! a₁ a₂
+                                           → equalInType i w' #QNAT! a₁ a₂
                                            → equalTypes i w' (#EQ (#APPLY (#CS c) a₁) (ℂ→C· k) Typeℂ₀₁·)
                                                               (#EQ (#APPLY (#CS c) a₂) (ℂ→C· k) Typeℂ₀₁·))
 equalTypes-#Σchoice-qt-body cb cc i w c k comp sat w' e' a₁ a₂ ea =
@@ -206,45 +215,45 @@ equalTypes-#Σchoice-qt-body cb cc i w c k comp sat w' e' a₁ a₂ ea =
     aw2 = sat→equalInType-Typeℂ₀₁· i w' k sat
 
 
-equalTypes-#Σchoice-qt-body-sub0 : (cb : QTBoolℂ CB) (cc : cℂ) (i : ℕ) (w : 𝕎·) (c : Name) (k : ℂ·)
+equalTypes-#Σchoice-qt-body-sub0 : (cb : Bool!ℂ CB) (cc : cℂ) (i : ℕ) (w : 𝕎·) (c : Name) (k : ℂ·)
                                 → compatible· c w Resℂ
                                 → Σ ℕ (λ n → ·ᵣ Resℂ n k)
                                 → ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm)
-                                                → equalInType i w' #QTNAT! a₁ a₂
-                                                → equalTypes i w' (sub0 a₁ (#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (ℂ→C0 k) #[0]Typeℂ₀₁))
-                                                                   (sub0 a₂ (#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (ℂ→C0 k) #[0]Typeℂ₀₁)))
+                                               → equalInType i w' #QNAT! a₁ a₂
+                                               → equalTypes i w' (sub0 a₁ (#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (ℂ→C0 k) #[0]Typeℂ₀₁))
+                                                                 (sub0 a₂ (#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (ℂ→C0 k) #[0]Typeℂ₀₁)))
 equalTypes-#Σchoice-qt-body-sub0 cb cc i w c k comp sat w' e' a₁ a₂ ea rewrite sub0-#Σchoice-body≡ a₁ c k | sub0-#Σchoice-body≡ a₂ c k =
   equalTypes-#Σchoice-qt-body cb cc i w c k comp sat w' e' a₁ a₂ ea
 
 
-getChoice→equalInType-#Σchoice-qt-aux : (cb : QTBoolℂ CB) (cc : cℂ) {n : ℕ} {name : Name} {w : 𝕎·} {k : ℂ·} (i : ℕ)
+getChoice→equalInType-#Σchoice-qt-aux : (cb : Bool!ℂ CB) (cc : cℂ) {n : ℕ} {name : Name} {w : 𝕎·} {k : ℂ·} (i : ℕ)
                                       → compatible· name w Resℂ
                                       → ·ᵣ Resℂ n k
                                       → #APPLY (#CS name) (#NUM n) #⇛! ℂ→C· k at w
                                       → equalInType
                                            i w
-                                           (#SUM #QTNAT! (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 k) #[0]Typeℂ₀₁))
+                                           (#SUM! #QNAT! (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 k) #[0]Typeℂ₀₁))
                                            (#PAIR (#NUM n) #AX) (#PAIR (#NUM n) #AX)
 getChoice→equalInType-#Σchoice-qt-aux cb cc {n} {name} {w} {k} i comp sat g =
-  equalInType-SUM
-    {i} {w} {#QTNAT!} {#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 k) #[0]Typeℂ₀₁}
-    (eqTypes-mon (uni i) eqTypesQTNAT!)
+  equalInType-SUM!
+    {i} {w} {#QNAT!} {#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 k) #[0]Typeℂ₀₁}
+    (eqTypes-mon (uni i) eqTypesQNAT!)
     (equalTypes-#Σchoice-qt-body-sub0 cb cc i w name k comp (0 , sat))
     j
   where
-    j : □· w (λ w' _ → SUMeq (equalInType i w' #QTNAT!)
+    j : □· w (λ w' _ → SUMeq! (equalInType i w' #QNAT!)
                               (λ a b ea → equalInType i w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 k) #[0]Typeℂ₀₁)))
                               w'
                               (#PAIR (#NUM n) #AX)
                               (#PAIR (#NUM n) #AX))
     j = Mod.∀𝕎-□ M (λ w1 e1 → #NUM n , #NUM n , #AX , #AX ,
-                                NUM-equalInType-QTNAT! i w1 n ,
-                                #compAllRefl (#PAIR (#NUM n) #AX) w1 ,
-                                #compAllRefl (#PAIR (#NUM n) #AX) w1 ,
-                                getChoice→equalInType-#Σchoice-aux1 i sat (∀𝕎-mon e1 g))
+                              NUM-equalInType-QNAT! i w1 n ,
+                              #⇛!-refl {w1} {#PAIR (#NUM n) #AX} ,
+                              #⇛!-refl {w1} {#PAIR (#NUM n) #AX} ,
+                              getChoice→equalInType-#Σchoice-aux1 i sat (∀𝕎-mon e1 g))
 
 
-getChoice→equalInType-#Σchoice-qt : (cb : QTBoolℂ CB) (cc : cℂ) {n : ℕ} {name : Name} {w : 𝕎·} {k : ℂ·} (i : ℕ)
+getChoice→equalInType-#Σchoice-qt : (cb : Bool!ℂ CB) (cc : cℂ) {n : ℕ} {name : Name} {w : 𝕎·} {k : ℂ·} (i : ℕ)
                                   → compatible· name w Resℂ
                                   → ·ᵣ Resℂ n k
                                   → #APPLY (#CS name) (#NUM n) #⇛! ℂ→C· k at w
@@ -253,47 +262,65 @@ getChoice→equalInType-#Σchoice-qt cb cc {n} {name} {w} {k} i comp sat g rewri
   getChoice→equalInType-#Σchoice-qt-aux cb cc i comp sat g
 
 
-¬∀𝕎¬equalInType-#Σchoice-qt : (cb : QTBoolℂ CB) (cc : cℂ) (i : ℕ) (w : 𝕎·) (name : Name) (k : ℂ·)
-                            → ⋆ᵣ Resℂ k
-                            → compatible· name w Resℂ
-                            → freezable· name w
-                            → ¬ ∀𝕎 w (λ w' _ → ¬ inhType i w' (#Σchoice-qt name k))
-¬∀𝕎¬equalInType-#Σchoice-qt cb cc i w name k rk comp fb aw = aw w1 e1 (#PAIR (#NUM n1) #AX , h1)
+¬∀𝕎¬equalInType-#Σchoice-qt-freezable : (cb : Bool!ℂ CB) (cc : cℂ) (i : ℕ) (w : 𝕎·) (name : Name)
+                                      → compatible· name w Resℂ
+                                      → freezable· name w
+                                      → ¬ ∀𝕎 w (λ w' _ → ¬ inhType i w' (#Σchoice-qt name ℂ₁·))
+¬∀𝕎¬equalInType-#Σchoice-qt-freezable cb cc i w name comp fb aw =
+  aw w1 e1 (#PAIR (#NUM n1) #AX , h1)
   where
     w1 : 𝕎·
-    w1 = freeze· name w k
+    w1 = freeze· name w ℂ₁·
 
     e1 : w ⊑· w1
-    e1 = freeze⊑· name w k comp rk
+    e1 = freeze⊑· name w comp
 
     n1 : ℕ
-    n1 = fst (getFreeze· name w k comp tt fb)
+    n1 = fst (getFreeze· name w comp tt fb)
 
-    g0 : ∀𝕎 w1 (λ w' _ → Lift (lsuc(L)) (getChoice· n1 name w' ≡ just k))
-    g0 = snd (getFreeze· name w k comp tt fb)
+    g0 : ∀𝕎 w1 (λ w' _ → Lift (lsuc(L)) (getChoice· n1 name w' ≡ just ℂ₁·))
+    g0 = snd (getFreeze· name w comp tt fb)
 
-    g1 : #APPLY (#CS name) (#NUM n1) #⇛! ℂ→C· k at w1
+    g1 : #APPLY (#CS name) (#NUM n1) #⇛! ℂ→C· ℂ₁· at w1
     g1 = →#APPLY-#CS#⇛ℂ→C· g0
 
-    h1 : equalInType i w1 (#Σchoice-qt name k) (#PAIR (#NUM n1) #AX) (#PAIR (#NUM n1) #AX)
-    h1 = getChoice→equalInType-#Σchoice-qt cb cc i (⊑-compatible· e1 comp) (rk 0) g1
+    h1 : equalInType i w1 (#Σchoice-qt name ℂ₁·) (#PAIR (#NUM n1) #AX) (#PAIR (#NUM n1) #AX)
+    h1 = getChoice→equalInType-#Σchoice-qt cb cc i (⊑-compatible· e1 comp) (Res.sat₁ Resℂ 0) g1
 
 
-¬ΣQTNAT!→¬inhType-Σchoice-qt : QTBoolℂ CB → (n : ℕ) (w : 𝕎·) (name : Name)
-                           → ∀𝕎 w (λ w' _ → ¬ Σ CTerm (λ n₁ → Σ CTerm (λ n₂ → equalInType n w' #QTNAT! n₁ n₂ × inhType n w' (#ASSERT₃ (#APPLY (#CS name) n₁)))))
-                           → ∀𝕎 w (λ w' _ → ¬ inhType n w' (#Σchoice-qt name ℂ₁·))
-¬ΣQTNAT!→¬inhType-Σchoice-qt bcb n w name aw w1 e1 (t , inh) =
+¬∀𝕎¬equalInType-#Σchoice-qt : (cb : Bool!ℂ CB) (cc : cℂ) (i : ℕ) (w : 𝕎·) (name : Name)
+                            → compatible· name w Resℂ
+                            → ¬ ∀𝕎 w (λ w' _ → ¬ inhType i w' (#Σchoice-qt name ℂ₁·))
+¬∀𝕎¬equalInType-#Σchoice-qt cb cc i w name comp aw
+  with freezableDec· name w
+¬∀𝕎¬equalInType-#Σchoice-qt cb cc i w name comp aw | inj₁ fb =
+  ¬∀𝕎¬equalInType-#Σchoice-qt-freezable cb cc i w name comp fb aw
+¬∀𝕎¬equalInType-#Σchoice-qt cb cc i w name comp aw | inj₂ nfb
+  with ¬freezable· name w {Resℂ} comp tt nfb
+... | n , aw0 = aw w (⊑-refl· w) (#PAIR (#NUM n) #AX , h1)
+  where
+    g1 : #APPLY (#CS name) (#NUM n) #⇛! ℂ→C· ℂ₁· at w
+    g1 = →#APPLY-#CS#⇛ℂ→C· aw0
+
+    h1 : equalInType i w (#Σchoice-qt name ℂ₁·) (#PAIR (#NUM n) #AX) (#PAIR (#NUM n) #AX)
+    h1 = getChoice→equalInType-#Σchoice-qt cb cc i comp (sat-ℂ₁ 0) g1
+
+
+¬ΣQNAT!→¬inhType-Σchoice-qt : Bool!ℂ CB → (n : ℕ) (w : 𝕎·) (name : Name)
+                            → ∀𝕎 w (λ w' _ → ¬ Σ CTerm (λ n₁ → Σ CTerm (λ n₂ → equalInType n w' #QNAT! n₁ n₂ × inhType n w' (#ASSERT₃ (#APPLY (#CS name) n₁)))))
+                            → ∀𝕎 w (λ w' _ → ¬ inhType n w' (#Σchoice-qt name ℂ₁·))
+¬ΣQNAT!→¬inhType-Σchoice-qt bcb n w name aw w1 e1 (t , inh) =
   lower (Mod.□-const M (Mod.∀𝕎-□Func M aw3 h1))
   where
-    h0 : ∈Type n w1 (#SUM #QTNAT! (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁)) t
+    h0 : ∈Type n w1 (#SUM! #QNAT! (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁)) t
     h0 = ≡CTerm→equalInType (#Σchoice-qt≡ name ℂ₁·) inh
 
-    h1 : □· w1 (λ w' _ → SUMeq (equalInType n w' #QTNAT!) (λ a b ea → equalInType n w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁))) w' t t)
-    h1 = equalInType-SUM→ h0
+    h1 : □· w1 (λ w' _ → SUMeq! (equalInType n w' #QNAT!) (λ a b ea → equalInType n w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁))) w' t t)
+    h1 = equalInType-SUM!→ {B = #[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁} h0
 
-    aw3 : ∀𝕎 w1 (λ w' e' → SUMeq (equalInType n w' #QTNAT!)
-                                   (λ a b ea → equalInType n w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁)))
-                                   w' t t
+    aw3 : ∀𝕎 w1 (λ w' e' → SUMeq! (equalInType n w' #QNAT!)
+                                  (λ a b ea → equalInType n w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁)))
+                                  w' t t
                           → Lift (lsuc L) ⊥)
     aw3 w2 e2 (a₁ , a₂ , b₁ , b₂ , ea , c₁ , c₂ , eb) = lift (aw w2 (⊑-trans· e1 e2) (a₁ , a₂ , ea , b₁ , equalInType-refl eqi2))
           where
@@ -306,35 +333,48 @@ getChoice→equalInType-#Σchoice-qt cb cc {n} {name} {w} {k} i comp sat g rewri
                                        eqi1
 
 
-fun-equalInType-SUM-QTNAT! : {n : ℕ} {w : 𝕎·} {a b : CTerm0} {u v : CTerm}
-                          → ∀𝕎 w (λ w' _ → (m : CTerm) (t₁ t₂ : CTerm) → ∈Type n w' #QTNAT! m
-                                          → equalInType n w' (sub0 m a) t₁ t₂
-                                          → equalInType n w' (sub0 m b) t₁ t₂)
-                          → ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) (ea : equalInType n w' #QTNAT! a₁ a₂) → equalTypes n w' (sub0 a₁ b) (sub0 a₂ b))
-                          → equalInType n w (#SUM #QTNAT! a) u v
-                          → equalInType n w (#SUM #QTNAT! b) u v
-fun-equalInType-SUM-QTNAT! {n} {w} {a} {b} {u} {v} imp eqb eqi =
-  equalInType-SUM
-    (λ w' _ → eqTypesQTNAT!)
+fun-equalInType-SUM!-QNAT! : {n : ℕ} {w : 𝕎·} {a b : CTerm0} {u v : CTerm}
+                            → ∀𝕎 w (λ w' _ → (m : CTerm) (t₁ t₂ : CTerm) → ∈Type n w' #QNAT! m
+                                           → equalInType n w' (sub0 m a) t₁ t₂
+                                           → equalInType n w' (sub0 m b) t₁ t₂)
+                            → ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) (ea : equalInType n w' #QNAT! a₁ a₂)
+                                           → equalTypes n w' (sub0 a₁ b) (sub0 a₂ b))
+                            → equalInType n w (#SUM! #QNAT! a) u v
+                            → equalInType n w (#SUM! #QNAT! b) u v
+fun-equalInType-SUM!-QNAT! {n} {w} {a} {b} {u} {v} imp eqb eqi =
+  equalInType-SUM!
+    {B = b}
+    (λ w' _ → eqTypesQNAT!)
     eqb
-    (Mod.∀𝕎-□Func M aw (equalInType-SUM→ eqi))
+    (Mod.∀𝕎-□Func M aw (equalInType-SUM!→ {B = a} eqi))
   where
-    aw : ∀𝕎 w (λ w' e' → SUMeq (equalInType n w' #QTNAT!) (λ a₁ b₁ ea → equalInType n w' (sub0 a₁ a)) w' u v
-                        → SUMeq (equalInType n w' #QTNAT!) (λ a₁ b₁ ea → equalInType n w' (sub0 a₁ b)) w' u v)
+    aw : ∀𝕎 w (λ w' e' → SUMeq! (equalInType n w' #QNAT!) (λ a₁ b₁ ea → equalInType n w' (sub0 a₁ a)) w' u v
+                       → SUMeq! (equalInType n w' #QNAT!) (λ a₁ b₁ ea → equalInType n w' (sub0 a₁ b)) w' u v)
     aw w1 e1 (a₁ , a₂ , b₁ , b₂ , ea , c₁ , c₂ , eb) = a₁ , a₂ , b₁ , b₂ , ea , c₁ , c₂ , imp w1 e1 a₁ b₁ b₂ (equalInType-refl ea) eb
 
 
-#SUM-ASSERT₄→#Σchoice-qt : (bcb : QTBoolℂ CB) (cc : cℂ) → {n : ℕ} {w : 𝕎·} {name : Name}
-                       → compatible· name w Resℂ
-                       → Σ ℕ (λ n → ·ᵣ Resℂ n ℂ₁·)
-                       → inhType n w (#SUM-ASSERT₄ (#CS name))
-                       → inhType n w (#Σchoice-qt name ℂ₁·)
+equalInType-BTRUE-ℂ₁ : (bcb : Bool!ℂ CB) (i : ℕ) (w : 𝕎·)
+                     → equalInType i w #BOOL! #BTRUE Cℂ₁
+equalInType-BTRUE-ℂ₁ bcb i w
+  rewrite (snd (snd bcb))
+  = BTRUE∈BOOL! i w
+
+
+#SUM-ASSERT₄→#Σchoice-qt : (bcb : Bool!ℂ CB) (cc : cℂ) → {n : ℕ} {w : 𝕎·} {name : Name}
+                         → compatible· name w Resℂ
+                         → Σ ℕ (λ n → ·ᵣ Resℂ n ℂ₁·)
+                         → inhType n w (#SUM-ASSERT₄ (#CS name))
+                         → inhType n w (#Σchoice-qt name ℂ₁·)
 #SUM-ASSERT₄→#Σchoice-qt bcb cc {n} {w} {name} comp sat (t , inh) =
   t , ≡CTerm→equalInType
         (sym (#Σchoice-qt≡ name ℂ₁·))
-        (fun-equalInType-SUM-QTNAT! {n} {w} {#[0]ASSERT₃ (#[0]APPLY (#[0]CS name) #[0]VAR)} aw1 aw2 inh)
+        (fun-equalInType-SUM!-QNAT!
+          {n} {w}
+          {#[0]ASSERT₃ (#[0]APPLY (#[0]CS name) #[0]VAR)}
+          {#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 ℂ₁·) #[0]Typeℂ₀₁}
+          aw1 aw2 inh)
   where
-    aw1 : ∀𝕎 w (λ w' _ → (m : CTerm) (t₁ t₂ : CTerm) → ∈Type n w' #QTNAT! m
+    aw1 : ∀𝕎 w (λ w' _ → (m : CTerm) (t₁ t₂ : CTerm) → ∈Type n w' #QNAT! m
                         → equalInType n w' (sub0 m (#[0]ASSERT₃ (#[0]APPLY (#[0]CS name) #[0]VAR))) t₁ t₂
                         → equalInType n w' (sub0 m (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 ℂ₁·) #[0]Typeℂ₀₁)) t₁ t₂)
     aw1 w1 e1 m t₁ t₂ j eqi = ≡CTerm→equalInType (sym (sub0-#Σchoice-body≡ m name ℂ₁·)) eqi2
@@ -342,47 +382,49 @@ fun-equalInType-SUM-QTNAT! {n} {w} {a} {b} {u} {v} imp eqb eqi =
         eqi1 : equalInType n w1 (#ASSERT₃ (#APPLY (#CS name) m)) t₁ t₂
         eqi1 = ≡CTerm→equalInType (sub0-ASSERT₃-APPLY m (#CS name)) eqi
 
-        eqt : equalTypes n w1 (#EQ (#APPLY (#CS name) m) #BTRUE #QTBOOL!) (#EQ (#APPLY (#CS name) m) Cℂ₁ Typeℂ₀₁·)
-        eqt = eqTypesEQ← (equalTypes-QTBOOL!-Typeℂ₀₁ bcb n w1)
+        eqt : equalTypes n w1 (#EQ (#APPLY (#CS name) m) #BTRUE #BOOL!) (#EQ (#APPLY (#CS name) m) Cℂ₁ Typeℂ₀₁·)
+        eqt = eqTypesEQ← (equalTypes-BOOL!-Typeℂ₀₁ bcb n w1)
                           (→equalInType-APPLY-CS-QTBOOL!-qt bcb cc (⊑-compatible· e1 comp) j)
-                          (equalInType-QT-BTRUE-ℂ₁ bcb n w1)
+                          (equalInType-BTRUE-ℂ₁ bcb n w1)
 
         eqi2 : equalInType n w1 (#EQ (#APPLY (#CS name) m) Cℂ₁ Typeℂ₀₁·) t₁ t₂
         eqi2 = equalTypes→equalInType
                  (≡CTerm→eqTypes (sym (#ASSERT₃≡ (#APPLY (#CS name) m))) refl eqt)
                  eqi1
 
-    aw2 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) (ea : equalInType n w' #QTNAT! a₁ a₂)
+    aw2 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) (ea : equalInType n w' #QNAT! a₁ a₂)
                         → equalTypes n w' (sub0 a₁ (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 ℂ₁·) #[0]Typeℂ₀₁))
                                            (sub0 a₂ (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 ℂ₁·) #[0]Typeℂ₀₁)))
     aw2 = equalTypes-#Σchoice-qt-body-sub0 bcb cc n w name ℂ₁· comp sat
 
 
 ΣinhType-ASSERT₃→inhType-SUM-ASSERT₄ : (n : ℕ) (w : 𝕎·) (f : CTerm)
-                                        → ∈Type n w #QTNAT!→QTBOOL! f
-                                        → Σ CTerm (λ n₁ → Σ CTerm (λ n₂ → equalInType n w #QTNAT! n₁ n₂
+                                        → ∈Type n w #QNAT!→BOOL! f
+                                        → Σ CTerm (λ n₁ → Σ CTerm (λ n₂ → equalInType n w #QNAT! n₁ n₂
                                             × inhType n w (#ASSERT₃ (#APPLY f n₁))))
                                         → inhType n w (#SUM-ASSERT₄ f)
 ΣinhType-ASSERT₃→inhType-SUM-ASSERT₄ n w f f∈ (n₁ , n₂ , n∈ , (t , inh)) =
   #PAIR n₁ t ,
-  equalInType-SUM
-    (λ w' _ → eqTypesQTNAT!)
+  equalInType-SUM!
+    {B = #[0]ASSERT₃ (#[0]APPLY ⌞ f ⌟ #[0]VAR)}
+    (λ w' _ → eqTypesQNAT!)
     (isType-MP-right-qt₂-body n w f f f∈)
     (Mod.∀𝕎-□ M aw)
   where
-    aw : ∀𝕎 w (λ w' _ → SUMeq (equalInType n w' #QTNAT!)
-                                (λ a b ea → equalInType n w' (sub0 a (#[0]ASSERT₃ (#[0]APPLY ⌞ f ⌟ #[0]VAR))))
-                                w' (#PAIR n₁ t) (#PAIR n₁ t))
+    aw : ∀𝕎 w (λ w' _ → SUMeq! (equalInType n w' #QNAT!)
+                               (λ a b ea → equalInType n w' (sub0 a (#[0]ASSERT₃ (#[0]APPLY ⌞ f ⌟ #[0]VAR))))
+                               w' (#PAIR n₁ t) (#PAIR n₁ t))
     aw w1 e1 =
       n₁ , n₁ , t , t , equalInType-refl (equalInType-mon n∈ w1 e1) ,
-      #⇛-refl w1 (#PAIR n₁ t) , #⇛-refl w1 (#PAIR n₁ t) ,
+      #⇛!-refl {w1} {#PAIR n₁ t} ,
+      #⇛!-refl {w1} {#PAIR n₁ t} ,
       →≡equalInType (sym (sub0-ASSERT₃-APPLY n₁ f)) (equalInType-mon inh w1 e1)
 
 
 ¬onlyℂ∈𝕎-#weakMonEq!-#weakℂEq : (cc : cℂ) (w : 𝕎·) (c : Name) (r : Res) (a₁ a₂ : CTerm) (k1 : ℂ·)
-      → ((w : 𝕎·) → ¬ ∼C! w (ℂ→C· (Res.def r)) (ℂ→C· k1))
+      → ((w : 𝕎·) → ¬ ∼C! w (ℂ→C· (Res.c₀ r)) (ℂ→C· k1))
       → compatible· c w r
-      → onlyℂ∈𝕎 (Res.def r) c w
+      → onlyℂ∈𝕎 (Res.c₀ r) c w
       → #weakMonEq! w a₁ a₂
       → #weakℂEq w (#APPLY (#CS c) a₁) (ℂ→C· k1)
       → ⊥
@@ -390,7 +432,7 @@ fun-equalInType-SUM-QTNAT! {n} {w} {a} {b} {u} {v} imp eqb eqi =
 ... | k , c₁ , c₂ with lower (cc c r w k compat w (⊑-refl· w))
 ... |    inj₁ gc = diff w h3
   where
-    h1 : ℂ₀· ≡ Res.def r
+    h1 : ℂ₀· ≡ Res.c₀ r
     h1 = only k ℂ₀· gc
 
     gt : getT k c w ≡ just (ℂ→T ℂ₀·)
@@ -402,11 +444,11 @@ fun-equalInType-SUM-QTNAT! {n} {w} {a} {b} {u} {v} imp eqb eqi =
     h2 : ∼C! w (ℂ→C· ℂ₀·) (ℂ→C· k1)
     h2 = lower (wc w (⊑-refl· w)) ℂ₀· k1 ca (⇓!-refl (ℂ→T k1) w)
 
-    h3 : ∼C! w (ℂ→C· (Res.def r)) (ℂ→C· k1)
+    h3 : ∼C! w (ℂ→C· (Res.c₀ r)) (ℂ→C· k1)
     h3 = subst (λ x → ∼C! w (ℂ→C· x) (ℂ→C· k1)) h1 h2
 ... |    inj₂ gc = diff w h3
   where
-    h1 : ℂ₁· ≡ Res.def r
+    h1 : ℂ₁· ≡ Res.c₀ r
     h1 = only k ℂ₁· gc
 
     gt : getT k c w ≡ just (ℂ→T ℂ₁·)
@@ -418,31 +460,31 @@ fun-equalInType-SUM-QTNAT! {n} {w} {a} {b} {u} {v} imp eqb eqi =
     h2 : ∼C! w (ℂ→C· ℂ₁·) (ℂ→C· k1)
     h2 = lower (wc w (⊑-refl· w)) ℂ₁· k1 ca (⇓!-refl (ℂ→T k1) w)
 
-    h3 : ∼C! w (ℂ→C· (Res.def r)) (ℂ→C· k1)
+    h3 : ∼C! w (ℂ→C· (Res.c₀ r)) (ℂ→C· k1)
     h3 = subst (λ x → ∼C! w (ℂ→C· x) (ℂ→C· k1)) h1 h2
 
 
 ¬equalInType-#Σchoice-qt : (cc : cℂ) (i : ℕ) (w : 𝕎·) (r : Res) (c : Name) {k1 : ℂ·}
-                        → isValue (ℂ→T (Res.def r))
+                        → isValue (ℂ→T (Res.c₀ r))
                         → isValue (ℂ→T k1)
-                        → ((w : 𝕎·) → ¬ ∼C! w (ℂ→C· (Res.def r)) (ℂ→C· k1))
-                        → onlyℂ∈𝕎 (Res.def r) c w
+                        → ((w : 𝕎·) → ¬ ∼C! w (ℂ→C· (Res.c₀ r)) (ℂ→C· k1))
+                        → onlyℂ∈𝕎 (Res.c₀ r) c w
                         → compatible· c w r
                         → freezable· c w
                         → ¬ inhType i w (#Σchoice-qt c k1)
 ¬equalInType-#Σchoice-qt cc i w r c {k1} isv₁ isv₂ diff oc comp fb (x , eqi) =
   ¬onlyℂ∈𝕎-#weakMonEq!-#weakℂEq cc w3 c r a₁ a₂ k1 diff comp3 oc3 (∀𝕎-mon e3 ea3) eb6 --diff w4 sim3
   where
-    h0 : equalInType i w (#SUM #QTNAT! (#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (ℂ→C0 k1) #[0]Typeℂ₀₁)) x x
+    h0 : equalInType i w (#SUM! #QNAT! (#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (ℂ→C0 k1) #[0]Typeℂ₀₁)) x x
     h0 rewrite #Σchoice-qt≡ c k1 = eqi
 
-    h1 : □· w (λ w' _ → SUMeq (equalInType i w' #QTNAT!) (λ a b ea → equalInType i w' (#EQ (#APPLY (#CS c) a) (ℂ→C· k1) Typeℂ₀₁·)) w' x x)
-    h1 = Mod.∀𝕎-□Func M aw (equalInType-SUM→ {i} {w} {#QTNAT!} {#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (ℂ→C0 k1) #[0]Typeℂ₀₁} h0)
+    h1 : □· w (λ w' _ → SUMeq! (equalInType i w' #QNAT!) (λ a b ea → equalInType i w' (#EQ (#APPLY (#CS c) a) (ℂ→C· k1) Typeℂ₀₁·)) w' x x)
+    h1 = Mod.∀𝕎-□Func M aw (equalInType-SUM!→ {i} {w} {#QNAT!} {#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (ℂ→C0 k1) #[0]Typeℂ₀₁} h0)
       where
-        aw : ∀𝕎 w (λ w' e' → SUMeq (equalInType i w' #QTNAT!)
-                                     (λ a b ea → equalInType i w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (ℂ→C0 k1) #[0]Typeℂ₀₁)))
-                                     w' x x
-                           → SUMeq (equalInType i w' #QTNAT!)
+        aw : ∀𝕎 w (λ w' e' → SUMeq! (equalInType i w' #QNAT!)
+                                    (λ a b ea → equalInType i w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (ℂ→C0 k1) #[0]Typeℂ₀₁)))
+                                    w' x x
+                           → SUMeq! (equalInType i w' #QNAT!)
                                     (λ a b ea → equalInType i w' (#EQ (#APPLY (#CS c) a) (ℂ→C· k1) Typeℂ₀₁·))
                                     w' x x)
         aw w' e' (a₁ , a₂ , b₁ , b₂ , ea , c₁ , c₂ , eb) rewrite sub0-#Σchoice-body≡ a₁ c k1 = a₁ , a₂ , b₁ , b₂ , ea , c₁ , c₂ , eb
@@ -454,7 +496,7 @@ fun-equalInType-SUM-QTNAT! {n} {w} {a} {b} {u} {v} imp eqb eqi =
     e1 : w ⊑· w1
     e1 = fst (snd (ChoiceBar.followChoice CB c h1 oc comp fb))
 
-    oc1 : onlyℂ∈𝕎 (Res.def r) c w1
+    oc1 : onlyℂ∈𝕎 (Res.c₀ r) c w1
     oc1 = fst (snd (snd (ChoiceBar.followChoice CB c h1 oc comp fb)))
 
     comp1 : compatible· c w1 r
@@ -463,7 +505,7 @@ fun-equalInType-SUM-QTNAT! {n} {w} {a} {b} {u} {v} imp eqb eqi =
     fb1 : freezable· c w1
     fb1 = fst (snd (snd (snd (snd (ChoiceBar.followChoice CB c h1 oc comp fb)))))
 
-    h2 : SUMeq (equalInType i w1 #QTNAT!) (λ a b ea → equalInType i w1 (#EQ (#APPLY (#CS c) a) (ℂ→C· k1) Typeℂ₀₁·)) w1 x x
+    h2 : SUMeq! (equalInType i w1 #QNAT!) (λ a b ea → equalInType i w1 (#EQ (#APPLY (#CS c) a) (ℂ→C· k1) Typeℂ₀₁·)) w1 x x
     h2 = snd (snd (snd (snd (snd (ChoiceBar.followChoice CB c h1 oc comp fb)))))
 
     a₁ : CTerm
@@ -478,7 +520,7 @@ fun-equalInType-SUM-QTNAT! {n} {w} {a} {b} {u} {v} imp eqb eqi =
     b₂ : CTerm
     b₂ = fst (snd (snd (snd h2)))
 
-    ea1 : equalInType i w1 #QTNAT! a₁ a₂
+    ea1 : equalInType i w1 #QNAT! a₁ a₂
     ea1 = fst (snd (snd (snd (snd h2))))
 
     eb1 : equalInType i w1 (#EQ (#APPLY (#CS c) a₁) (ℂ→C· k1) Typeℂ₀₁·) b₁ b₂
@@ -486,7 +528,7 @@ fun-equalInType-SUM-QTNAT! {n} {w} {a} {b} {u} {v} imp eqb eqi =
 
     -- 2nd jump to bar
     ea2 : □· w1 (λ w' _ → #weakMonEq! w' a₁ a₂)
-    ea2 = equalInType-QTNAT!→ i w1 a₁ a₂ ea1
+    ea2 = equalInType-QNAT!→ i w1 a₁ a₂ ea1
 
     w2 : 𝕎·
     w2 = fst (ChoiceBar.followChoice CB c ea2 oc1 comp1 fb1)
@@ -494,7 +536,7 @@ fun-equalInType-SUM-QTNAT! {n} {w} {a} {b} {u} {v} imp eqb eqi =
     e2 : w1 ⊑· w2
     e2 = fst (snd (ChoiceBar.followChoice CB c ea2 oc1 comp1 fb1))
 
-    oc2 : onlyℂ∈𝕎 (Res.def r) c w2
+    oc2 : onlyℂ∈𝕎 (Res.c₀ r) c w2
     oc2 = fst (snd (snd (ChoiceBar.followChoice CB c ea2 oc1 comp1 fb1)))
 
     comp2 : compatible· c w2 r
@@ -524,7 +566,7 @@ fun-equalInType-SUM-QTNAT! {n} {w} {a} {b} {u} {v} imp eqb eqi =
     e3 : w2 ⊑· w3
     e3 = fst (snd (ChoiceBar.followChoice CB c eb5 oc2 comp2 fb2))
 
-    oc3 : onlyℂ∈𝕎 (Res.def r) c w3
+    oc3 : onlyℂ∈𝕎 (Res.c₀ r) c w3
     oc3 = fst (snd (snd (ChoiceBar.followChoice CB c eb5 oc2 comp2 fb2)))
 
     comp3 : compatible· c w3 r
@@ -537,27 +579,19 @@ fun-equalInType-SUM-QTNAT! {n} {w} {a} {b} {u} {v} imp eqb eqi =
     eb6 = snd (snd (snd (snd (snd (ChoiceBar.followChoice CB c eb5 oc2 comp2 fb2)))))
 
 
--- This version makes use of #QTNAT! and #QTBOOL!
--- It requires alwaysFreezable, which means that all names are always mutable.
--- Freezable/mutable is used to guarantee that if a name is freezable then freezing it will make it immutable.
--- + FCSs are always freezable, because freezable returns always true because FCS slots are immutable once filled out.
--- + References are not always freezable. Freezable returns whether the cell is frozen, and once it is, it is not freezable anymore.
---   This is because a reference has only 1 cell to fill out.
--- Questions:
--- (1) Is cℂ necessary?
--- (2) Are there stateful computations that satisfy both properties?
-¬MP₅ : (bcb : QTBoolℂ CB) (cc : cℂ) → alwaysFreezable F → (w : 𝕎·) (n : ℕ) → ∈Type n w (#NEG #MP₅) #lamAX
-¬MP₅ bcb cc afb w n = equalInType-NEG (isTypeMP₅ w n) aw1
+-- This version makes use of #QNAT! and #QTBOOL!
+¬MP₅ : (bcb : Bool!ℂ CB) (cc : cℂ) → (w : 𝕎·) (n : ℕ) → ∈Type n w (#NEG #MP₅) #lamAX
+¬MP₅ bcb cc w n = equalInType-NEG (isTypeMP₅ w n) aw1
   where
     aw1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → ¬ equalInType n w' #MP₅ a₁ a₂)
     aw1 w1 e1 F G ea = h8 h7
       where
-        aw2 : ∀𝕎 w1 (λ w' _ → (f : CTerm) → ∈Type n w' #QTNAT!→QTBOOL! f
-                           → ∀𝕎 w' (λ w' _ → ∀𝕎 w' (λ w' _ → (Σ CTerm (λ n₁ → Σ CTerm (λ n₂ → equalInType n w' #QTNAT! n₁ n₂
+        aw2 : ∀𝕎 w1 (λ w' _ → (f : CTerm) → ∈Type n w' #QNAT!→BOOL! f
+                           → ∀𝕎 w' (λ w' _ → ∀𝕎 w' (λ w' _ → (Σ CTerm (λ n₁ → Σ CTerm (λ n₂ → equalInType n w' #QNAT! n₁ n₂
                                                                   × inhType n w' (#ASSERT₃ (#APPLY f n₁)))))
                                                               → ⊥)
                                             → ⊥)
-                           → □· w' (λ w' _ → Σ CTerm (λ n₁ → Σ CTerm (λ n₂ → equalInType n w' #QTNAT! n₁ n₂
+                           → □· w' (λ w' _ → Σ CTerm (λ n₁ → Σ CTerm (λ n₂ → equalInType n w' #QNAT! n₁ n₂
                                               × inhType n w' (#ASSERT₃ (#APPLY f n₁))))))
         aw2 = ∈#MP₅→ n w1 F G ea
 
@@ -570,7 +604,7 @@ fun-equalInType-SUM-QTNAT! {n} {w} {a} {b} {u} {v} imp eqb eqi =
         e2 : w1 ⊑· w2
         e2 = startNewChoice⊏ Resℂ w1
 
-        oc1 : onlyℂ∈𝕎 (Res.def Resℂ) name w2
+        oc1 : onlyℂ∈𝕎 (Res.c₀ Resℂ) name w2
         oc1 n = getChoice-startNewChoice n Resℂ w1
 
         comp1 : compatible· name w2 Resℂ
@@ -582,19 +616,19 @@ fun-equalInType-SUM-QTNAT! {n} {w} {a} {b} {u} {v} imp eqb eqi =
         f : CTerm
         f = #CS name
 
-        eqf1 : ∈Type n w2 #QTNAT!→QTBOOL! f
-        eqf1 = →equalInType-CS-QTNAT!→QTBOOL! bcb cc {n} {w2} {name} comp1
+        eqf1 : ∈Type n w2 #QNAT!→BOOL! f
+        eqf1 = →equalInType-CS-QNAT!→BOOL! bcb cc {n} {w2} {name} comp1
 
-        h3 : ∀𝕎 w2 (λ w' _ → ∀𝕎 w' (λ w' _ → (Σ CTerm (λ n₁ → Σ CTerm (λ n₂ → equalInType n w' #QTNAT! n₁ n₂
+        h3 : ∀𝕎 w2 (λ w' _ → ∀𝕎 w' (λ w' _ → (Σ CTerm (λ n₁ → Σ CTerm (λ n₂ → equalInType n w' #QNAT! n₁ n₂
                                                    × inhType n w' (#ASSERT₃ (#APPLY f n₁)))))
                                                → ⊥)
                              → ⊥)
-        h3 w3 e3 aw = ¬∀𝕎¬equalInType-#Σchoice-qt bcb cc n w3 name ℂ₁· sat-ℂ₁ (⊑-compatible· e3 comp1) (afb name w3) z
+        h3 w3 e3 aw = ¬∀𝕎¬equalInType-#Σchoice-qt bcb cc n w3 name (⊑-compatible· e3 comp1) z
           where
             z : ∀𝕎 w3 (λ w4 e4 → ¬ inhType n w4 (#Σchoice-qt name ℂ₁·))
-            z = ¬ΣQTNAT!→¬inhType-Σchoice-qt bcb n w3 name aw
+            z = ¬ΣQNAT!→¬inhType-Σchoice-qt bcb n w3 name aw
 
-        h4 : □· w2 (λ w' _ → Σ CTerm (λ n₁ → Σ CTerm (λ n₂ → equalInType n w' #QTNAT! n₁ n₂
+        h4 : □· w2 (λ w' _ → Σ CTerm (λ n₁ → Σ CTerm (λ n₂ → equalInType n w' #QNAT! n₁ n₂
                                               × inhType n w' (#ASSERT₃ (#APPLY f n₁)))))
         h4 = aw2 w2 e2 f eqf1 h3
 
@@ -605,7 +639,7 @@ fun-equalInType-SUM-QTNAT! {n} {w} {a} {b} {u} {v} imp eqb eqi =
         e3 : w2 ⊑· w3
         e3 = fst (snd (ChoiceBar.followChoice CB name h4 oc1 comp1 fb1))
 
-        oc2 : onlyℂ∈𝕎 (Res.def Resℂ) name w3
+        oc2 : onlyℂ∈𝕎 (Res.c₀ Resℂ) name w3
         oc2 = fst (snd (snd (ChoiceBar.followChoice CB name h4 oc1 comp1 fb1)))
 
         comp2 : compatible· name w3 Resℂ
@@ -614,7 +648,7 @@ fun-equalInType-SUM-QTNAT! {n} {w} {a} {b} {u} {v} imp eqb eqi =
         fb2 : freezable· name w3
         fb2 = fst (snd (snd (snd (snd (ChoiceBar.followChoice CB name h4 oc1 comp1 fb1)))))
 
-        h6 : Σ CTerm (λ n₁ → Σ CTerm (λ n₂ → equalInType n w3 #QTNAT! n₁ n₂
+        h6 : Σ CTerm (λ n₁ → Σ CTerm (λ n₂ → equalInType n w3 #QNAT! n₁ n₂
               × inhType n w3 (#ASSERT₃ (#APPLY f n₁))))
         h6 = snd (snd (snd (snd (snd (ChoiceBar.followChoice CB name h4 oc1 comp1 fb1)))))
 

@@ -9,7 +9,13 @@ open import Cubical.Foundations.Prelude
 open import Cubical.Foundations.HLevels
   using (isSetRetract ; isSetΣ ; isSet× ; isSet→ ; isSetΠ ; isSet→isGroupoid)
 open import Cubical.Categories.Category.Base
-  using (Category)
+  using (Category ; _^op)
+open import Cubical.Categories.Limits.Terminal
+open import Cubical.Categories.Functor
+open import Cubical.Categories.Instances.Sets
+-- For the category of elements:
+open import Cubical.Categories.Constructions.Elements
+
 open import Cubical.HITs.TypeQuotients renaming (rec to quot-rec ; elim to quot-elim)
 open import Cubical.HITs.SetQuotients renaming (rec to set-quot-rec ; elim to set-quot-elim)
 open import Cubical.HITs.PropositionalTruncation
@@ -636,3 +642,20 @@ Asm l l′ k′ {{p}} {{c}} =
 
 \end{code}
 
+CwFs
+
+\begin{code}
+
+open Contravariant
+
+record CwF {l k m n : Level} : Set(lsuc l ⊔ lsuc k ⊔ lsuc m ⊔ lsuc n) where
+  constructor mkCwF
+  field
+    C  : Category l k
+    o  : Terminal C
+    Ty : Functor (C ^op) (SET m)
+    Tm : Functor (∫ᴾ Ty) (SET n)
+
+-- 1. Prove that assemblies form a CwF
+-- 2. Show that CwF form a model of TT
+\end{code}

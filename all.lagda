@@ -57,7 +57,9 @@ open import not_lpo{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(EM)(CB) using (¬LPO)
 -- As opposed to the above version, this one relies on QTBool instead of Bool:
 open import not_lpo_qtbool{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB) using (¬LPOq)
 -- This version requires choices to be Booleans, but also freezable to always be true:
-open import not_mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB) using (¬MP ; ¬MP₂ ; ¬MP₃ ; ¬MP₄)
+open import not_mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB) using (¬MP ; ¬MP₂ ; ¬MP₃ ; ¬MP₄ ; ¬MP₆)
+-- Here is a proof of ¬ MP using nowrite datatypes (but can read)
+open import not_mp_qt{L}(W)(M)(C)(K)(P)(G)(X)(EC)(N)(V)(F)(CB) using (¬MP₅)
 -- In here, we've tried to prove to prove ¬MP for a read/no-write version of MP, but it is not finished
 -- open import not_mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(CE)(CB)
 -- MP is however consistent when restricted to pure functions
