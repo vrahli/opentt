@@ -664,9 +664,9 @@ record CwF {l k m n : Level} : Set(lsuc l ⊔ lsuc k ⊔ lsuc m ⊔ lsuc n) wher
   field
     _⨾_ : (Γ : ob) (σ : fst (Ty .F-ob Γ)) → ob
 
-    p⟨_⟩ : {Γ : ob} (σ : fst (Ty .F-ob Γ)) → Hom[ Γ ⨾ σ , Γ ]
+    p : {Γ : ob} (σ : fst (Ty .F-ob Γ)) → Hom[ Γ ⨾ σ , Γ ]
 
-    v⟨_⟩ : {Γ : ob} (σ : fst (Ty .F-ob Γ)) → (fst (Tm .F-ob ((Γ ⨾ σ) , {!!})))
+    v : {Γ : ob} (σ : fst (Ty .F-ob Γ)) → (fst (Tm .F-ob ((Γ ⨾ σ) , (Ty .F-hom (p σ)) σ)))
 
 -- 1. Prove that assemblies form a CwF
 -- 2. Show that CwF form a model of TT (unless we take TT to be the initial CwF)
