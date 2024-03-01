@@ -115,7 +115,7 @@ open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
   using (followChoice· ; #[0]Typeℂ₀₁ ; Typeℂ₀₁·)
 open import not_lem(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
   using (sq-dec ; #Σchoice ; ¬-dec-Σchoice ; equalInType-#Σchoice ; ¬equalInType-#Σchoice ; ¬∀𝕎¬equalInType-#Σchoice ;
-         sub0-#Σchoice-body≡ ; #Σchoice≡)
+         ¬∀𝕎¬equalInType-#Σchoice-freezable ; sub0-#Σchoice-body≡ ; #Σchoice≡)
 open import typeC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
   using (Resℂ ; →equalInType-APPLY-CS-Typeℂ₀₁·)
 open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
@@ -361,7 +361,7 @@ sq-dec! t = #SQUASH (#UNION! t (#NEG t))
     concl : (inhType i w3 (#Σchoice name k1) ⊎ ∀𝕎 w3 (λ w'' _ → ¬ inhType i w'' (#Σchoice name k1)))
             → ⊥
     concl (inj₁ eqi) = ¬equalInType-#Σchoice i w3 Resℂ name isValueℂ₀· isValueℂ₁· dks oc2 comp2 fb2 eqi
-    concl (inj₂ aw) = ¬∀𝕎¬equalInType-#Σchoice i w3 name comp2 {--fb2--} aw
+    concl (inj₂ aw) = ¬∀𝕎¬equalInType-#Σchoice-freezable i w3 name comp2 fb2 aw
 
 
 #PI-NEG-ASSERT₄→#Σchoice : Bool₀!ℂ CB → {n : ℕ} {w : 𝕎·} {name : Name}
