@@ -15,7 +15,6 @@ open import Cubical.Categories.Functor
 open import Cubical.Categories.Instances.Sets
 -- For the category of elements:
 open import Cubical.Categories.Constructions.Elements
-open import Cubical.Categories.TypesOfCategories.TypeCategory
 
 open import Cubical.HITs.TypeQuotients renaming (rec to quot-rec ; elim to quot-elim)
 open import Cubical.HITs.SetQuotients renaming (rec to set-quot-rec ; elim to set-quot-elim)
@@ -652,17 +651,21 @@ open Contravariant
 record CwF {l k m n : Level} : Set(lsuc l ⊔ lsuc k ⊔ lsuc m ⊔ lsuc n) where
   constructor mkCwF
 
-  open Category
   open Functor
 
   field
-    C   : Category l k
-    o   : Terminal C
-    Ty  : Functor (C ^op) (SET m)
-    Tm  : Functor (∫ᴾ Ty) (SET n)
-    _⨾_ : (Γ : C .ob) (σ : fst (Ty .F-ob Γ)) → C .ob
+    C  : Category l k
+    o  : Terminal C
+    Ty : Functor (C ^op) (SET m)
+    Tm : Functor (∫ᴾ Ty) (SET n)
+
+  open Category C
+
+  field
+    _⨾_ : (Γ : ob) (σ : fst (Ty .F-ob Γ)) → ob
+
+    p⟨_⟩ : {Γ : ob} (σ : fst (Ty .F-ob Γ)) → Hom[ Γ ⨾ σ , Γ ]
+
 -- 1. Prove that assemblies form a CwF
 -- 2. Show that CwF form a model of TT
-
-
 \end{code}
