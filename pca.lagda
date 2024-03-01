@@ -667,5 +667,6 @@ record CwF {l k m n : Level} : Set(lsuc l ⊔ lsuc k ⊔ lsuc m ⊔ lsuc n) wher
     p⟨_⟩ : {Γ : ob} (σ : fst (Ty .F-ob Γ)) → Hom[ Γ ⨾ σ , Γ ]
 
 -- 1. Prove that assemblies form a CwF
--- 2. Show that CwF form a model of TT
+-- 2. Show that CwF form a model of TT (unless we take TT to be the initial CwF)
+
 \end{code}
