@@ -1080,10 +1080,19 @@ freezeCS =
     freezeCs⊑
     getFreezeCs
     freezableStartCs
-    ¬freezableRef
     --freezeCsProgress
 
 open import freezeDef(PossibleWorldsCS)(choiceCS)(compatibleCS)(progressCS)(getChoiceCS)(newChoiceCS)(freezeCS)
+
+
+open import freezeExt(PossibleWorldsCS)(choiceCS)(compatibleCS)(progressCS)(getChoiceCS)(newChoiceCS)(freezeCS)
+
+freezeExtCS : FreezeExt
+freezeExtCS =
+  mkFreezeExt
+    ¬freezableRef
+
+open import freezeExtDef(PossibleWorldsCS)(choiceCS)(compatibleCS)(progressCS)(getChoiceCS)(newChoiceCS)(freezeCS)(freezeExtCS)
 
 
 getChoice-extcs-last : (w : 𝕎·) (k : ℕ) (name : Name) (l : List ℂ·) (r : Res) (t : ℂ·)

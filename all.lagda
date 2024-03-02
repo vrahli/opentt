@@ -19,6 +19,7 @@ open import choiceVal
 open import getChoice
 open import newChoice
 open import freeze
+open import freezeExt
 open import progress
 open import choiceBar
 open import exBar
@@ -27,13 +28,19 @@ open import encode
 open import MarkovPrinciple
 
 
-module all {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
-           (C : Choice) (K : Compatible W C) (P : Progress {L} W C K)
-           (G : GetChoice {L} W C K) (X : ChoiceExt {L} W C)
-           (N : NewChoice {L} W C K G)
+module all {L  : Level}
+           (W  : PossibleWorlds {L})
+           (M  : Mod W)
+           (C  : Choice)
+           (K  : Compatible W C)
+           (P  : Progress {L} W C K)
+           (G  : GetChoice {L} W C K)
+           (X  : ChoiceExt {L} W C)
+           (N  : NewChoice {L} W C K G)
            (EC : Encode)
-           (V : ChoiceVal W C K G X N EC)
-           (F : Freeze {L} W C K P G N)
+           (V  : ChoiceVal W C K G X N EC)
+           (F  : Freeze {L} W C K P G N)
+           (FE : FreezeExt {L} W C K P G N F)
            (E0 : Extensionality 0ℓ 0ℓ)
            (EM : ExcludedMiddle (lsuc(L))) -- for ExBar, used in turn in lem
            (MP : MarkovPrinciple (lsuc(L)))
@@ -57,9 +64,9 @@ open import not_lpo{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(EM)(CB) using (¬LPO)
 -- As opposed to the above version, this one relies on QTBool instead of Bool:
 open import not_lpo_qtbool{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB) using (¬LPOq)
 -- This version requires choices to be Booleans, but also freezable to always be true:
-open import not_mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB) using (¬MP ; ¬MP₂ ; ¬MP₃ ; ¬MP₄ ; ¬MP₆)
+open import not_mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(FE)(CB) using (¬MP ; ¬MP₂ ; ¬MP₃ ; ¬MP₄ ; ¬MP₆)
 -- Here is a proof of ¬ MP using nowrite datatypes (but can read)
-open import not_mp_qt{L}(W)(M)(C)(K)(P)(G)(X)(EC)(N)(V)(F)(CB) using (¬MP₅)
+open import not_mp_qt{L}(W)(M)(C)(K)(P)(G)(X)(EC)(N)(V)(F)(FE)(CB) using (¬MP₅)
 -- In here, we've tried to prove to prove ¬MP for a read/no-write version of MP, but it is not finished
 -- open import not_mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(CE)(CB)
 -- MP is however consistent when restricted to pure functions
@@ -71,7 +78,7 @@ open import mp{L}(W)(M)(C)(K)(G)(X)(N)(EC)(EB)(EM) using (MPvalid ; MP₂valid)
 -- If we assume that choices are TRUE and FALSE only, using choice sequences we can prove
 -- (1) the invalidity of MP_ℙ (¬MPℙ) using the same pattern than the one for ¬MP, which uses Booleans as choices
 -- (2) the validity of MP_𝔹 (MP₇-inh) using classical logic and the fact that functions to Bools essentially act as pure functions
-open import mp_prop2{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)(EM) using (¬MPℙ ; MP₇-inh)
+open import mp_prop2{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(FE)(CB)(EM) using (¬MPℙ ; MP₇-inh)
 
 -- Some results about pure expressions
 open import pure2{L}(W)(M)(C)(K)(G)(X)(N)(EC) using (Πpure→ ; ∈PURE-NAT→)

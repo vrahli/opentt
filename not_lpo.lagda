@@ -114,7 +114,7 @@ open import props6(W)(M)(C)(K)(G)(X)(N)(EC)
 open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
   using (followChoice· ; #[0]Typeℂ₀₁ ; Typeℂ₀₁·)
 open import not_lem(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
-  using (sq-dec ; #Σchoice ; ¬-dec-Σchoice ; equalInType-#Σchoice ; ¬equalInType-#Σchoice ; ¬∀𝕎¬equalInType-#Σchoice ;
+  using (sq-dec ; #Σchoice ; ¬-dec-Σchoice ; equalInType-#Σchoice ; ¬equalInType-#Σchoice ;
          ¬∀𝕎¬equalInType-#Σchoice-freezable ; sub0-#Σchoice-body≡ ; #Σchoice≡)
 open import typeC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
   using (Resℂ ; →equalInType-APPLY-CS-Typeℂ₀₁·)

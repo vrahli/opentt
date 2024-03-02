@@ -52,6 +52,7 @@ open import choiceExt
 open import newChoice
 open import choiceVal
 open import freeze
+open import freezeExt
 open import choiceBar
 open import MarkovPrinciple
 
@@ -67,6 +68,7 @@ module mltt2 {L  : Level}
              (EC : Encode)
              (V  : ChoiceVal W C K G X N EC)
              (F  : Freeze {L} W C K P G N)
+             (FE : FreezeExt {L} W C K P G N F)
              (CB : ChoiceBar W M C K P G X N EC V F)
              (MP : MarkovPrinciple (lsuc(L)))
        where
@@ -91,7 +93,7 @@ open import barI(W)(M)
   using (∃□)
 open import mp_props(W)(M)(C)(K)(G)(X)(N)(EC)
   using (#MPₘ ; ≡SUM!)
-open import not_mp(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
+open import not_mp(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(FE)(CB)
   using (¬MPₘ ; alwaysFreezable)
 open import mpp3(W)(M)(C)(K)(G)(X)(N)(MP)(EC)
   using (MPp₇-inh₃ ; #MPeval ; #MPevalExt)

@@ -2,16 +2,12 @@
 {-# OPTIONS --rewriting #-}
 {-# OPTIONS --guardedness #-}
 
---open import bar
---module not_lem (bar : Bar) where
-
 open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
 open import Agda.Builtin.Bool
 open import Agda.Builtin.Equality
 open import Agda.Builtin.Equality.Rewrite
 open import Agda.Builtin.Sigma
 open import Relation.Nullary
-open import Relation.Unary using (Pred; Decidable)
 open import Relation.Binary.PropositionalEquality using (sym ; trans ; subst)
 open import Data.Product
 open import Data.Product.Properties
@@ -21,15 +17,6 @@ open import Data.Maybe
 open import Data.Unit using (⊤ ; tt)
 open import Data.Nat using (ℕ ; _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_ ; pred)
 open import Data.Nat.Properties
-open import Agda.Builtin.String
-open import Agda.Builtin.String.Properties
-open import Data.List
-open import Data.List.Properties
-open import Data.List.Relation.Unary.Any
-open import Data.List.Membership.Propositional
-open import Data.List.Membership.Propositional.Properties
-open import Function.Bundles
-open import Induction.WellFounded
 
 
 open import util
@@ -78,44 +65,32 @@ open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(G)(X)(N)(EC)
 open import props0(W)(M)(C)(K)(G)(X)(N)(EC)
---open import ind2(W)(M)(C)(K)(G)(X)(N)(EC)
+  using (eqTypes-mon)
 
-open import props1(W)(M)(C)(K)(G)(X)(N)(EC)
 open import props2(W)(M)(C)(K)(G)(X)(N)(EC)
+  using (eqTypesEQ← ; isTypeNAT! ; equalTypes→equalInType-UNIV ; equalInType-EQ ; NUM-equalInType-NAT! ;
+         equalInType-NAT!→ ; equalInType-mon ; equalInType-SQUASH→ ; equalInType-UNION→ ; equalInType-NEG→ ;
+         equalInType-refl ; ≡CTerm→equalInType ; equalInType-PI→ ; equalInType-NEG)
 open import props3(W)(M)(C)(K)(G)(X)(N)(EC)
+  using (equalTerms-pres-#⇛-left-rev→equalInType-pres-#⇛-LR-rev ; equalTerms-pres-#⇛-left→equalInType-pres-#⇛-LR ;
+         equalInType-EQ→₁ ; →equalInType-SQUASH)
+
 open import lem_props(W)(M)(C)(K)(G)(X)(N)(EC)
+  using (onlyℂ∈𝕎→⇓ ; →#APPLY-#CS#⇛ℂ→C· ; #LEM ; #LEM≡#PI ; sub0-#[0]SQUASH-LEM ; eqTypesLem)
 
 open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
+  using (typeℂ₀₁ ; #-typeℂ₀₁ ; #[0]Typeℂ₀₁ ; Typeℂ₀₁· ; Typeℂ₀₁-isType· ; #⇛Typeℂ₀₁-rev· ; followChoice· ; #⇛Typeℂ₀₁· ;
+         ∈Typeℂ₀₁→· ; □·-choice·)
+
 open import typeC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
+  using (Resℂ ; →equalInType-APPLY-CS-Typeℂ₀₁· ; sat→equalInType-Typeℂ₀₁·)
 
 open import terms8(W)(C)(K)(G)(X)(N)(EC)
   using (SUM! ; #SUM!)
 
 open import props6(W)(M)(C)(K)(G)(X)(N)(EC)
   using (SUMeq! ; equalInType-SUM! ; equalInType-SUM!→ ; eqTypesSUM!←)
-
--- open import calculus
--- open import world
--- open import theory (bar)
--- open import props0 (bar)
--- open import ind2 (bar) -- this is the one where a function is not recognized as terminating, but does not break the bar abstraction
--- open import type_sys_props_nat (bar)
--- open import type_sys_props_qnat (bar)
--- open import type_sys_props_lt (bar)
--- open import type_sys_props_qlt (bar)
--- open import type_sys_props_free (bar)
--- open import type_sys_props_pi (bar)
--- open import type_sys_props_sum (bar)
--- open import type_sys_props_set (bar)
--- open import type_sys_props_eq (bar)
--- open import type_sys_props_union (bar)
--- open import type_sys_props_tsquash (bar)
--- open import type_sys_props_ffdefs (bar)
--- open import props1 (bar)
--- open import terms (bar)
 \end{code}
-
-
 
 
 \begin{code}[hide]
@@ -538,24 +513,6 @@ sq-dec t = #SQUASH (#UNION t (#NEG t))
     h1 = getChoice→equalInType-#Σchoice i (⊑-compatible· e1 comp) (sat-ℂ₁ 0) g1
 
 
-¬∀𝕎¬equalInType-#Σchoice : (i : ℕ) (w : 𝕎·) (name : Name)
-                         → compatible· name w Resℂ
-                         → ¬ ∀𝕎 w (λ w' _ → ¬ inhType i w' (#Σchoice name ℂ₁·))
-¬∀𝕎¬equalInType-#Σchoice i w name comp aw
-  with freezableDec· name w
-¬∀𝕎¬equalInType-#Σchoice i w name comp aw | inj₁ fb =
-  ¬∀𝕎¬equalInType-#Σchoice-freezable i w name comp fb aw
-¬∀𝕎¬equalInType-#Σchoice i w name comp aw | inj₂ nfb
-  with ¬freezable· name w {Resℂ} comp tt nfb
-... | n , aw0 = aw w (⊑-refl· w) (#PAIR (#NUM n) #AX , h1)
-  where
-    g1 : #APPLY (#CS name) (#NUM n) #⇛! ℂ→C· ℂ₁· at w
-    g1 = →#APPLY-#CS#⇛ℂ→C· aw0
-
-    h1 : equalInType i w (#Σchoice name ℂ₁·) (#PAIR (#NUM n) #AX) (#PAIR (#NUM n) #AX)
-    h1 = getChoice→equalInType-#Σchoice i comp (sat-ℂ₁ 0) g1
-
-
 ¬-dec-Σchoice : (w : 𝕎·) (i : ℕ)
               → ¬ equalInType i (startNewChoice Resℂ w) (sq-dec (#Σchoice (newChoice· w) ℂ₁·)) #AX #AX
 ¬-dec-Σchoice w1 i eqi = concl h3
@@ -622,7 +579,7 @@ sq-dec t = #SQUASH (#UNION t (#NEG t))
     concl : (inhType i w3 (#Σchoice name k1) ⊎ ∀𝕎 w3 (λ w'' _ → ¬ inhType i w'' (#Σchoice name k1)))
             → ⊥
     concl (inj₁ eqi) = ¬equalInType-#Σchoice i w3 Resℂ name isValueℂ₀· isValueℂ₁· dks oc2 comp2 fb2 eqi
-    concl (inj₂ aw) = ¬∀𝕎¬equalInType-#Σchoice i w3 name comp2 {--fb2--} aw
+    concl (inj₂ aw) = ¬∀𝕎¬equalInType-#Σchoice-freezable i w3 name comp2 fb2 aw
 
 
 fun-equalInType-SQUASH-UNION-AX : {n : ℕ} {w : 𝕎·} {a b u v : CTerm}

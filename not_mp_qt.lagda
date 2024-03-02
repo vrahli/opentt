@@ -33,6 +33,7 @@ open import choiceVal
 open import getChoice
 open import newChoice
 open import freeze
+open import freezeExt
 open import progress
 open import choiceBar
 open import mod
@@ -51,6 +52,7 @@ module not_mp_qt {L  : Level}
                  (N  : NewChoice {L} W C K G)
                  (V  : ChoiceVal W C K G X N EC)
                  (F  : Freeze {L} W C K P G N)
+                 (FE : FreezeExt {L} W C K P G N F)
                  (CB : ChoiceBar W M C K P G X N EC V F)
        where
 
@@ -63,6 +65,7 @@ open import newChoiceDef(W)(C)(K)(G)(N)
 open import choiceExtDef(W)(C)(K)(G)(X)
 open import choiceValDef(W)(C)(K)(G)(X)(N)(EC)(V)
 open import freezeDef(W)(C)(K)(P)(G)(N)(F)
+open import freezeExtDef(W)(C)(K)(P)(G)(N)(F)(FE)
 open import computation(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)

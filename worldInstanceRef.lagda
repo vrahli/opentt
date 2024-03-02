@@ -1113,9 +1113,18 @@ freezeREF =
     freezeRef⊑
     getFreezeRef
     freezableStartRef
-    ¬freezableRef
     --freezeRefProgress
 
 open import freezeDef(PossibleWorldsRef)(choiceRef)(compatibleREF)(progressREF)(getChoiceRef)(newChoiceRef)(freezeREF)
+
+
+open import freezeExt(PossibleWorldsRef)(choiceRef)(compatibleREF)(progressREF)(getChoiceRef)(newChoiceRef)(freezeREF)
+
+freezeExtREF : FreezeExt
+freezeExtREF =
+  mkFreezeExt
+    ¬freezableRef
+
+open import freezeExtDef(PossibleWorldsRef)(choiceRef)(compatibleREF)(progressREF)(getChoiceRef)(newChoiceRef)(freezeREF)(freezeExtREF)
 
 \end{code}

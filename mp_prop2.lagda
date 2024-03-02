@@ -47,6 +47,7 @@ open import choiceVal
 open import getChoice
 open import newChoice
 open import freeze
+open import freezeExt
 open import progress
 open import choiceBar
 open import mod
@@ -65,6 +66,7 @@ module mp_prop2 {L  : Level}
                 (EC : Encode)
                 (V  : ChoiceVal W C K G X N EC)
                 (F  : Freeze {L} W C K P G N)
+                (FE : FreezeExt {L} W C K P G N F)
                 (CB : ChoiceBar W M C K P G X N EC V F)
                 (EM : ExcludedMiddle (lsuc(L)))
        where
@@ -148,7 +150,9 @@ open import mp_props2(W)(M)(C)(K)(G)(X)(N)(EC)
 open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
   using (followChoice·)
 open import not_lem(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
-  using (#Σchoice ; #Σchoice≡ ; ¬∀𝕎¬equalInType-#Σchoice ; sub0-#Σchoice-body≡)
+  using (#Σchoice ; #Σchoice≡ ; sub0-#Σchoice-body≡)
+open import not_lem_ext(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(FE)(CB)
+  using (¬∀𝕎¬equalInType-#Σchoice)
 open import typeC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
   using (Resℂ ; →equalInType-APPLY-CS-Typeℂ₀₁·)
 --open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(CB)
