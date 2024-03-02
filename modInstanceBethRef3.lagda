@@ -117,9 +117,9 @@ open import props3(W)(M)(C)(K)(G)(X)(N)(enc)
 
 {--
 progressing→ΣgetCs≤ : {w : 𝕎·} {c : chain w} {r : Res} (n : Name) (m : ℕ)
-                       → compatible· n w r
-                       → progressing {w} c
-                       → Σ ℕ (λ k → Σ (List ℂ·) (λ l → getRef n (chain.seq c k) ≡ just (mkref n l r) × m < length l))
+                    → compatible· n w r
+                    → progressing {w} c
+                    → Σ ℕ (λ k → Σ ℂ· (λ l → getRef n (chain.seq c k) ≡ just (mkref n l r) × m < length l))
 progressing→ΣgetCs≤ {w} {c} {r} n 0 comp prog = k , (fst i2 ++ fst i3) , fst (snd i3) , len
   where
     z : Σ ℕ (λ m → 0 < m × progress· n (chain.seq c 0) (chain.seq c m))
@@ -173,7 +173,7 @@ progressing→ΣgetCs≤ {w} {c} {r} n (suc m) comp prog = k' , l ++ fst i1 , (f
 
     len' : suc m < length (l ++ proj₁ i1)
     len' rewrite length-++ l {fst i1} | suc-+1 m = <-≤-trans (+-monoˡ-< 1 len) (+-monoʳ-≤ (length l) (snd (snd i1)))
-
+--}
 
 
 IS𝔹-ℕ : (w : 𝕎·) (r : Res) (n : Name) (m : ℕ) (comp : compatible· n w r) → IS𝔹 w
@@ -181,26 +181,29 @@ IS𝔹-ℕ w r n m comp =
   mk𝔹 bar bars ext mon
   where
     bar : 𝕎· → Set₁
-    bar w' = w ⊑· w' × Σ (List ℂ·) (λ l → getCs n w' ≡ just (mkcs n l r) × m < length l)
+    bar w' = w ⊑· w' × Σ ℂ· (λ v → getRef n w' ≡ just (cell n r (just v)))
 
     bars : (c : pchain w) → BarredChain bar (pchain.c c)
-    bars (mkPChain c p) = mkBarredChain (chain.seq c (fst z)) b (fst z) (⊑-refl· _)
+    bars (mkPChain c p) = mkBarredChain {!!} {!!} {!!} {!!} {-- (chain.seq c (fst z)) b (fst z) (⊑-refl· _)
       where
         z : Σ ℕ (λ k → Σ (List ℂ·) (λ l → getCs n (chain.seq c k) ≡ just (mkcs n l r) × m < length l))
         z = progressing→ΣgetCs≤ {w} {c} n m comp p
 
         b : bar (chain.seq c (fst z))
         b = chain⊑n (fst z) c , snd z --fst (snd z) , fst (snd (snd z)) , snd (snd (snd z))
+--}
 
     ext : {w' : 𝕎·} → bar w' → w ⊑· w'
-    ext {w'} (e , l , g , len) = e
+    ext {w'} (e , v , g) = e
 
     mon : {w1 w2 : 𝕎·} → w1 ⊑· w2 → bar w1 → bar w2
-    mon {w1} {w2} e (e' , l , g , len) = ⊑-trans· e' e , l ++ fst (≽-pres-∈world e g) , fst (snd (≽-pres-∈world e g)) , ln
-      where
-        ln : m < length (l ++ fst (≽-pres-∈world e g))
-        ln rewrite length-++ l {fst (≽-pres-∈world e g)} = m≤n⇒m≤n+o (length (fst (≽-pres-∈world e g))) len
---}
+    mon {w1} {w2} e (e' , v , g)
+      with ⊑-pres-getRef {w1} {w2} {n} {r} {just v} e g
+    ... | just v' , g' , s' , f' rewrite sym f' = ⊑-trans· e' e , v , g'
+    ... | nothing , g' , s' , f' = ⊑-trans· e' e , v , ⊥-elim f'
+
+
+\end{code}
 
 
 Typeℂ₀₁-beth-ref : CTerm
