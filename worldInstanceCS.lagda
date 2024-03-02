@@ -638,11 +638,9 @@ getCs-freezeList≡ {c} {r} {x ∷ k} {w} {l} (d , nd) (here px) e rewrite sym p
     z2 rewrite getCs++ c (freezeList k w) [ choice c (Res.c₀ r) ] l r z1 with c ≟ c
     ... | yes p = refl
     ... | no p = ⊥-elim (p refl)
-
 getCs-freezeList≡ {c} {r} {x ∷ k} {w} {l} (d , nd) (there i) e
   rewrite ¬≡→≡getCs-extcs c (NRes.name x) (freezeList k w) (Res.c₀ (NRes.res x)) (λ x → d (getCs-freezeList≡-aux x i)) =
   getCs-freezeList≡ nd i e
-
 
 
 →∈remNRes : {L : Level} (name : Name) {r : NRes{L}} {l : List (NRes{L})} → ¬ NRes.name r ≡ name  → r ∈ l → r ∈ remNRes name l

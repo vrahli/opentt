@@ -8,7 +8,7 @@ open import Agda.Builtin.Equality.Rewrite
 open import Agda.Builtin.Sigma
 open import Relation.Nullary
 open import Relation.Unary using (Pred; Decidable)
-open import Relation.Binary.PropositionalEquality using (sym ; trans ; subst)
+open import Relation.Binary.PropositionalEquality using (sym ; trans ; subst ; cong)
 --open import Relation.Binary.PropositionalEquality hiding ([_] ; Extensionality) -- using (sym ; subst ; _∎ ; _≡⟨_⟩_)
 --open ≡-Reasoning
 open import Data.Product
@@ -104,6 +104,18 @@ wdom (cell name _ _ ∷ w) = name ∷ wdom w
 
 wnames : world → List Name
 wnames w = []
+
+
+remNRes : {L : Level} (n : Name) (l : List (NRes{L})) → List (NRes{L})
+remNRes {L} n [] = []
+remNRes {L} n (r ∷ l) with n ≟ NRes.name r
+... | yes p = remNRes n l
+... | no p = r ∷ remNRes n l
+
+
+wrdom : world → List NRes
+wrdom [] = []
+wrdom (cell name r v ∷ w) = mkNRes name r ∷ remNRes name (wrdom w)
 
 
 update : (n : Name) (v : ℂ·) (w : world) → world
@@ -239,6 +251,34 @@ getRef-update-just-≡ {cell name₁ r₁ nothing ∷ w} {name} {r} {v} v' e | n
   with name ≟ name₁
 getRef-update-just-≡ {cell name₁ r₁ nothing ∷ w} {name} {r} {v} v' e | no p | yes q = ⊥-elim (p q)
 getRef-update-just-≡ {cell name₁ r₁ nothing ∷ w} {name} {r} {v} v' e | no p | no q = getRef-update-just-≡ {w} v' e
+
+
+getRef-update-just-≡' : {w : 𝕎·} {name n : Name} {r : Res{0ℓ}} {v : ℂ·} (v' : ℂ·)
+                      → getRef name w ≡ just (cell name r (just v))
+                      → getRef name (update n v' w) ≡ just (cell name r (just v))
+getRef-update-just-≡' {cell name₁ r₁ (just x) ∷ w} {name} {n} {r} {v} v' e
+  with n ≟ name₁
+getRef-update-just-≡' {cell name₁ r₁ (just x) ∷ w} {name} {n} {r} {v} v' e | yes p
+  with name ≟ name₁
+getRef-update-just-≡' {cell name₁ r₁ (just x) ∷ w} {name} {n} {r} {v} v' e | yes p | yes q = e
+getRef-update-just-≡' {cell name₁ r₁ (just x) ∷ w} {name} {n} {r} {v} v' e | yes p | no q = e
+getRef-update-just-≡' {cell name₁ r₁ (just x) ∷ w} {name} {n} {r} {v} v' e | no p
+  with name ≟ name₁
+getRef-update-just-≡' {cell name₁ r₁ (just x) ∷ w} {name} {n} {r} {v} v' e | no p | yes q = e
+getRef-update-just-≡' {cell name₁ r₁ (just x) ∷ w} {name} {n} {r} {v} v' e | no p | no q =
+  getRef-update-just-≡' {w} {name} {n} {r} {v} v' e
+getRef-update-just-≡' {cell name₁ r₁ nothing ∷ w} {name} {n} {r} {v} v' e
+  with n ≟ name₁
+getRef-update-just-≡' {cell name₁ r₁ nothing ∷ w} {name} {n} {r} {v} v' e | yes p
+  with name ≟ name₁
+getRef-update-just-≡' {cell name₁ r₁ nothing ∷ w} {name} {n} {r} {v} v' e | yes p | yes q =
+  ⊥-elim (¬just≡nothing (sym (cell-inj3 (just-inj e))))
+getRef-update-just-≡' {cell name₁ r₁ nothing ∷ w} {name} {n} {r} {v} v' e | yes p | no q = e
+getRef-update-just-≡' {cell name₁ r₁ nothing ∷ w} {name} {n} {r} {v} v' e | no p
+  with name ≟ name₁
+getRef-update-just-≡' {cell name₁ r₁ nothing ∷ w} {name} {n} {r} {v} v' e | no p | yes q = e
+getRef-update-just-≡' {cell name₁ r₁ nothing ∷ w} {name} {n} {r} {v} v' e | no p | no q =
+  getRef-update-just-≡' {w} {name} {n} {r} {v} v' e
 
 
 getRef-update-nothing-≡ : {w : 𝕎·} {name : Name} {r : Res{0ℓ}} {v : ℂ·}
@@ -580,11 +620,14 @@ progressRef : (c : Name) (w1 w2 : 𝕎·) → Set₁
 progressRef c w1 w2 =
   (r : Res) (v : Mℂ·)
   → ∈world c r v w1
+  → Σ ℂ· (λ v' → ∈world c r (just v') w2 × satFrozen r v (just v'))
+
+
+progRef : (c : Name) (w1 w2 : 𝕎·) → Set₁
+progRef c w1 w2 =
+  (r : Res) (v : Mℂ·)
+  → ∈world c r v w1
   → Σ Mℂ· (λ v' → ∈world c r v' w2 × satFrozen r v v')
-
-
-progressRef-refl : (c : Name) (w : 𝕎·) → progressRef c w w
-progressRef-refl c w r v i = v , i , satFrozen-refl r v
 
 
 progressRef-trans : {c : Name} {w1 w2 w3 : 𝕎·}
@@ -594,19 +637,372 @@ progressRef-trans : {c : Name} {w1 w2 w3 : 𝕎·}
 progressRef-trans {c} {w1} {w2} {w3} p1 p2 r v i
   with p1 r v i
 ... | v' , i' , sf'
-  with p2 r v' i'
+  with p2 r (just v') i'
 ... | v'' , i'' , sf'' =
   v'' , i'' , satFrozen-trans {r = r} sf' sf''
 
 
+freezeDef : NRes{0ℓ} → 𝕎· → 𝕎·
+freezeDef r w = update (NRes.name r) (Res.c₀ (NRes.res r)) w
+
+
+freezeList : List (NRes{0ℓ}) → 𝕎· → 𝕎·
+freezeList [] w = w
+freezeList (r ∷ l) w = freezeDef r (freezeList l w)
+
+
+freezeSeq : List NRes → 𝕎· → ℕ → 𝕎·
+freezeSeq l w 0 = w
+freezeSeq l w (suc n) = freezeList l (freezeSeq l w n)
+
+
+𝕎→seq : 𝕎· → ℕ → 𝕎·
+𝕎→seq w = freezeSeq (wrdom w) w
+
+
+⊑𝕎→seq0 : (w : 𝕎·) → w ⊑· 𝕎→seq w 0
+⊑𝕎→seq0 w = ⊑-refl· w
+
+
+compatibleNRes : (r : NRes) (w : 𝕎·) → Set₁
+compatibleNRes r w = hasRes (NRes.name r) w (NRes.res r)
+
+
+⊑→compatibleNRes : {r : NRes} {w1 w2 : 𝕎·} → w1 ⊑· w2 → compatibleNRes r w1 → compatibleNRes r w2
+⊑→compatibleNRes {r} {w1} {w2} e (v , comp)
+  with ⊑-pres-getRef {w1} {w2} {NRes.name r} {NRes.res r} {v} e comp
+... | v' , g' , s' , f' = v' , g'
+
+
+compatibleListNRes : (l : List NRes) (w : 𝕎·) → Set₁
+compatibleListNRes l w = (r : NRes) → r ∈ l → compatibleNRes r w
+
+
+⊑→compatibleListNRes : {k : List NRes} {w1 w2 : 𝕎·} → w1 ⊑· w2 → compatibleListNRes k w1 → compatibleListNRes k w2
+⊑→compatibleListNRes {k} {w1} {w2} e comp r i = ⊑→compatibleNRes e (comp r i)
+
+
+--getRef→∈world : {c : Name} {r : Res} {w : 𝕎·} {v : Mℂ·} → getRef c w ≡ just (cell c r v) → ∈world c r v w
+--getRef→∈world {c} {r} {w} {l} h rewrite h = refl
+
+
+¬∈remNRes : {L : Level} {r : NRes{L}} {l : List (NRes{L})}
+              → ¬ r ∈ (remNRes (NRes.name r) l)
+¬∈remNRes {L} {r} {x ∷ l} i with NRes.name r ≟ NRes.name x
+... | yes p = ¬∈remNRes {L} {r} {l} i
+¬∈remNRes {L} {r} {x ∷ l} (here px) | no p rewrite px = ⊥-elim (p refl)
+¬∈remNRes {L} {r} {x ∷ l} (there i) | no p = ¬∈remNRes {L} {r} {l} i
+
+
+∈∷remNRes→ : {L : Level} {r : NRes{L}} {res : Res{L}} {l : List (NRes{L})}
+              → r ∈ (mkNRes (NRes.name r) res ∷ remNRes (NRes.name r) l)
+              → res ≡ NRes.res r
+∈∷remNRes→ {L} {r} {res} {l} (here px) rewrite px = refl
+∈∷remNRes→ {L} {r} {res} {l} (there i) = ⊥-elim (¬∈remNRes {L} {r} {l} i)
+
+
+∈remNRes→ : {L : Level} (name : Name) {r : NRes{L}} {l : List (NRes{L})} → r ∈ remNRes name l → r ∈ l
+∈remNRes→ {L} name {r} {x ∷ l} i with name ≟ NRes.name x
+... | yes p rewrite p = there (∈remNRes→ (NRes.name x) i)
+∈remNRes→ {L} name {r} {x ∷ l} (here px) | no p rewrite px = here refl
+∈remNRes→ {L} name {r} {x ∷ l} (there i) | no p = there (∈remNRes→ name i)
+
+
+∈wdom→∈world : {r : NRes} {w : 𝕎·} → r ∈ wrdom w → Σ Mℂ· (λ v → ∈world (NRes.name r) (NRes.res r) v w)
+∈wdom→∈world {r} {cell name r₁ v ∷ w} i with NRes.name r ≟ name
+∈wdom→∈world {r} {cell name r₁ v ∷ w} (here px) | yes p
+  rewrite px
+  = v , refl
+∈wdom→∈world {r} {cell name r₁ v ∷ w} (there i) | yes p
+  rewrite sym p
+  = ⊥-elim (¬∈remNRes {r = r} {l = wrdom w} i)
+∈wdom→∈world {r} {cell name r₁ v ∷ w} (here px) | no p
+  rewrite px
+  = ⊥-elim (p refl)
+∈wdom→∈world {r} {cell name r₁ v ∷ w} (there i) | no p
+  = ∈wdom→∈world {r} {w} (∈remNRes→ name i)
+
+
+compatibleListNRes-wrdom : (w : 𝕎·) → compatibleListNRes (wrdom w) w
+compatibleListNRes-wrdom w r i = ∈wdom→∈world {r} {w} i
+
+
+⊑freezeDef : (r : NRes) (w : 𝕎·) → compatibleNRes r w → w ⊑· freezeDef r w
+⊑freezeDef r w comp = upd w (NRes.name r) (NRes.res r) (Res.c₀ (NRes.res r)) comp (Res.sat₀ (NRes.res r))
+
+
+⊑freezeList : (w : 𝕎·) (l : List NRes) → compatibleListNRes l w → w ⊑· freezeList l w
+⊑freezeList w [] comp = ⊑-refl· w
+⊑freezeList w (x ∷ l) comp = ⊑-trans· (⊑freezeList w l comp1) (⊑freezeDef x (freezeList l w) comp2)
+  where
+    comp0 : compatibleNRes x w
+    comp0 = comp x (here refl)
+
+    comp1 : compatibleListNRes l w
+    comp1 r i = comp r (there i)
+
+    comp2 : compatibleNRes x (freezeList l w)
+    comp2 = ⊑→compatibleNRes (⊑freezeList w l comp1) comp0
+
+
+⊑freezeSeq : {l : List NRes} {w : 𝕎·} (n : ℕ) → compatibleListNRes l w → w ⊑· freezeSeq l w n
+⊑freezeSeq {l} {w} 0 comp = ⊑-refl· w
+⊑freezeSeq {l} {w} (suc n) comp =
+  ⊑-trans· (⊑freezeSeq n comp)
+           (⊑freezeList (freezeSeq l w n) l (⊑→compatibleListNRes (⊑freezeSeq n comp) comp))
+
+
+⊑𝕎→seqS : (w : 𝕎·) (n : ℕ) → 𝕎→seq w n ⊑· 𝕎→seq w (suc n)
+⊑𝕎→seqS w n = ⊑freezeList (𝕎→seq w n)
+                            (wrdom w)
+                            (⊑→compatibleListNRes (⊑freezeSeq n (compatibleListNRes-wrdom w)) (compatibleListNRes-wrdom w))
+
+
 𝕎→refChain : (w : 𝕎·) → chain w
-𝕎→refChain w = mkChain (λ _ → w) (⊑-refl· _) λ _ → ⊑-refl· _
+𝕎→refChain w =
+  mkChain
+    (𝕎→seq w)
+    (⊑𝕎→seq0 w)
+    (⊑𝕎→seqS w)
+
+
+{--
+progressRef-refl : (c : Name) (w : 𝕎·) → progressRef c w w
+progressRef-refl c w r v i = {!!} --just v , i , satFrozen-refl r v
+--}
+
+
+→∈remNRes : {L : Level} (name : Name) {r : NRes{L}} {l : List (NRes{L})} → ¬ NRes.name r ≡ name  → r ∈ l → r ∈ remNRes name l
+→∈remNRes {L} name {r} {x ∷ l} d (here px) with name ≟ NRes.name x
+... | yes p rewrite px | p = ⊥-elim (d refl)
+... | no p rewrite px = here refl
+→∈remNRes {L} name {r} {x ∷ l} d (there i) with name ≟ NRes.name x
+... | yes p rewrite p = →∈remNRes (NRes.name x) d i
+... | no p = there (→∈remNRes name d i)
+
+
+getRef→mkNRes∈wrdom : {c : Name} {w : 𝕎·} {v : Mℂ·} {r : Res}
+                      → getRef c w ≡ just (cell c r v)
+                      → mkNRes c r ∈ wrdom w
+getRef→mkNRes∈wrdom {c} {cell name r₁ v ∷ w} {l} {r} e
+  with c ≟ name
+getRef→mkNRes∈wrdom {c} {cell name r₁ v ∷ w} {l} {r} e | yes p
+  rewrite cell-inj1 (just-inj e) | cell-inj2 (just-inj e) | cell-inj3 (just-inj e)
+  = here refl
+getRef→mkNRes∈wrdom {c} {cell name r₁ v ∷ w} {l} {r} e | no p =
+  there (→∈remNRes name p (getRef→mkNRes∈wrdom {c} {w} {l} {r} e))
+
+
+wrdom-freezeDef : (w : 𝕎·) (x : NRes) → wrdom (freezeDef x w) ≡ wrdom w
+wrdom-freezeDef [] x = refl
+wrdom-freezeDef (cell name res nothing ∷ w) x
+  rewrite wrdom-freezeDef w x
+  with NRes.name x ≟ name
+wrdom-freezeDef (cell name res nothing ∷ w) x | yes p = refl
+wrdom-freezeDef (cell name res nothing ∷ w) x | no p
+  rewrite wrdom-freezeDef w x
+  = refl
+wrdom-freezeDef (cell name res (just v) ∷ w) x
+  rewrite wrdom-freezeDef w x
+  with NRes.name x ≟ name
+wrdom-freezeDef (cell name res (just v) ∷ w)  x | yes p = refl --refl
+wrdom-freezeDef (cell name res (just v) ∷ w)  x | no p
+  rewrite wrdom-freezeDef w x
+  = refl
+
+
+wrdom-freezeList : (w : 𝕎·) (l : List NRes) → wrdom (freezeList l w) ≡ wrdom w
+wrdom-freezeList w [] = refl
+wrdom-freezeList w (x ∷ l) rewrite wrdom-freezeDef (freezeList l w) x = wrdom-freezeList w l
+
+
+wrdom-freezeSeq : (w : 𝕎·) (l : List NRes) (n : ℕ) → wrdom (freezeSeq l w n) ≡ wrdom w
+wrdom-freezeSeq w l 0 = refl
+wrdom-freezeSeq w l (suc n) rewrite wrdom-freezeList (freezeSeq l w n) l = wrdom-freezeSeq w l n
+
+
+∈wrdom-freezeSeq→ : (r : NRes) (l : List NRes) (w : 𝕎·) (n : ℕ)
+                     → r ∈ wrdom (freezeSeq l w n)
+                     → r ∈ wrdom w
+∈wrdom-freezeSeq→ r l w n i rewrite wrdom-freezeSeq w l n  = i
+
+
+NRes-nodup : {L : Level} (l : List (NRes{L})) → Set
+NRes-nodup {L} [] = ⊤
+NRes-nodup {L} (r ∷ l) = ¬ (NRes.name r ∈ Data.List.map NRes.name l) × NRes-nodup l
+
+
+¬≡→≡getRef-update : (c name : Name) (w : 𝕎·) (t : ℂ·)
+                   → ¬ c ≡ name
+                   → getRef c (update name t w) ≡ getRef c w
+¬≡→≡getRef-update c name [] t d = refl
+¬≡→≡getRef-update c name (cell name₁ r v ∷ w) t d
+  with c ≟ name₁
+¬≡→≡getRef-update c name (cell name₁ r nothing ∷ w) t d | yes p
+  rewrite p
+  with name ≟ name₁
+¬≡→≡getRef-update c name (cell name₁ r nothing ∷ w) t d | yes p | yes q = ⊥-elim (d (sym q))
+¬≡→≡getRef-update c name (cell name₁ r nothing ∷ w) t d | yes p | no q
+  with name₁ ≟ name₁
+¬≡→≡getRef-update c name (cell name₁ r nothing ∷ w) t d | yes p | no q | yes z = refl
+¬≡→≡getRef-update c name (cell name₁ r nothing ∷ w) t d | yes p | no q | no z = ⊥-elim (z refl)
+¬≡→≡getRef-update c name (cell name₁ r (just v) ∷ w) t d | yes p
+  rewrite p
+  with name ≟ name₁
+¬≡→≡getRef-update c name (cell name₁ r (just v) ∷ w) t d | yes p | yes q = ⊥-elim (d (sym q))
+¬≡→≡getRef-update c name (cell name₁ r (just v) ∷ w) t d | yes p | no q
+  with name₁ ≟ name₁
+¬≡→≡getRef-update c name (cell name₁ r (just v) ∷ w) t d | yes p | no q | yes z = refl
+¬≡→≡getRef-update c name (cell name₁ r (just v) ∷ w) t d | yes p | no q | no z = ⊥-elim (z refl)
+¬≡→≡getRef-update c name (cell name₁ r nothing ∷ w) t d | no p
+  with name ≟ name₁
+¬≡→≡getRef-update c name (cell name₁ r nothing ∷ w) t d | no p | yes q
+  rewrite q
+  with c ≟ name₁
+¬≡→≡getRef-update c name (cell name₁ r nothing ∷ w) t d | no p | yes q | yes z = ⊥-elim (p z)
+¬≡→≡getRef-update c name (cell name₁ r nothing ∷ w) t d | no p | yes q | no z = refl
+¬≡→≡getRef-update c name (cell name₁ r nothing ∷ w) t d | no p | no q
+  with c ≟ name₁
+¬≡→≡getRef-update c name (cell name₁ r nothing ∷ w) t d | no p | no q | yes z = ⊥-elim (p z)
+¬≡→≡getRef-update c name (cell name₁ r nothing ∷ w) t d | no p | no q | no z =
+  ¬≡→≡getRef-update c name w t d
+¬≡→≡getRef-update c name (cell name₁ r (just v) ∷ w) t d | no p
+  with name ≟ name₁
+¬≡→≡getRef-update c name (cell name₁ r (just v) ∷ w) t d | no p | yes q
+  rewrite q
+  with c ≟ name₁
+¬≡→≡getRef-update c name (cell name₁ r (just v) ∷ w) t d | no p | yes q | yes z = ⊥-elim (d z)
+¬≡→≡getRef-update c name (cell name₁ r (just v) ∷ w) t d | no p | yes q | no z = refl
+¬≡→≡getRef-update c name (cell name₁ r (just v) ∷ w) t d | no p | no q
+  with c ≟ name₁
+¬≡→≡getRef-update c name (cell name₁ r (just v) ∷ w) t d | no p | no q | yes z = ⊥-elim (p z)
+¬≡→≡getRef-update c name (cell name₁ r (just v) ∷ w) t d | no p | no q | no z =
+  ¬≡→≡getRef-update c name w t d
+
+
+¬∈→getRef-freezeList : {c : Name} {k : List NRes} {w : 𝕎·} {e : Cell}
+                     → ¬ c ∈ Data.List.map NRes.name k
+                     → getRef c w ≡ just e
+                     → getRef c (freezeList k w) ≡ just e
+¬∈→getRef-freezeList {c} {[]} {w} {e} ni z = z
+¬∈→getRef-freezeList {c} {x ∷ k} {w} {e} ni z
+  rewrite ¬≡→≡getRef-update c (NRes.name x) (freezeList k w) (Res.c₀ (NRes.res x)) (λ x → ni (here x))
+  = ¬∈→getRef-freezeList (λ x → ni (there x)) z
+
+
+getRef-freezeList≡-aux : {L : Level} {c name : Name} {k : List (NRes{L})} {r : Res{L}}
+                        → c ≡ name
+                        → mkNRes c r ∈ k
+                        → name ∈ Data.List.map NRes.name k
+getRef-freezeList≡-aux {L} {c} {name} {x ∷ k} {r} e (here px) rewrite e | sym px = here refl
+getRef-freezeList≡-aux {L} {c} {name} {x ∷ k} {r} e (there i) = there (getRef-freezeList≡-aux e i)
+
+
+getRef-freezeList≡-nothing : {c : Name} {r : Res} {k : List NRes} {w : 𝕎·}
+                          → NRes-nodup k
+                          → mkNRes c r ∈ k
+                          → getRef c w ≡ just (cell c r nothing)
+                          → getRef c (freezeList k w) ≡ just (cell c r (just (Res.c₀ r)))
+getRef-freezeList≡-nothing {c} {r} {x ∷ k} {w} (d , nd) (here px) e rewrite sym px =
+  getRef-update-nothing-≡ {freezeList k w} {c} {r} {Res.c₀ r} z1
+  where
+  z1 : getRef c (freezeList k w) ≡ just (cell c r nothing)
+  z1 = ¬∈→getRef-freezeList d e
+getRef-freezeList≡-nothing {c} {r} {x ∷ k} {w} (d , nd) (there i) e =
+  getRef-update-¬≡ {freezeList k w} {c} {r} {just (Res.c₀ r)} (NRes.name x) (Res.c₀ (NRes.res x)) d' z1
+  where
+  z1 : getRef c (freezeList k w) ≡ just (cell c r (just (Res.c₀ r)))
+  z1 = getRef-freezeList≡-nothing {c} {r} {k} {w} nd i e
+
+  d' : ¬ NRes.name x ≡ c
+  d' y rewrite sym y = d (getRef-freezeList≡-aux (sym y) i)
+
+
+getRef-freezeList≡-just : {c : Name} {r : Res} {k : List NRes} {w : 𝕎·} {v : ℂ·}
+                        → getRef c w ≡ just (cell c r (just v))
+                        → getRef c (freezeList k w) ≡ just (cell c r (just v))
+getRef-freezeList≡-just {c} {r} {[]} {w} {v} e = e
+getRef-freezeList≡-just {c} {r} {mkNRes n r' ∷ k} {w} {v} e =
+  getRef-update-just-≡' {freezeList k w} {c} {n} {r} {v} (Res.c₀ r') i1
+  where
+  i1 : getRef c (freezeList k w) ≡ just (cell c r (just v))
+  i1 = getRef-freezeList≡-just {c} {r} {k} {w} {v} e
+
+{--
+ rewrite sym px =
+  getRef-update-nothing-≡ {freezeList k w} {c} {r} {Res.c₀ r} z1
+  where
+  z1 : getRef c (freezeList k w) ≡ just (cell c r nothing)
+  z1 = ¬∈→getRef-freezeList d e
+getRef-freezeList≡-just {c} {r} {x ∷ k} {w} {v} (d , nd) (there i) e =
+  getRef-update-¬≡ {freezeList k w} {c} {r} {just (Res.c₀ r)} (NRes.name x) (Res.c₀ (NRes.res x)) d' z1
+  where
+  z1 : getRef c (freezeList k w) ≡ just (cell c r (just (Res.c₀ r)))
+  z1 = getRef-freezeList≡-nothing {c} {r} {k} {w} nd i e
+
+  d' : ¬ NRes.name x ≡ c
+  d' y rewrite sym y = d (getRef-freezeList≡-aux (sym y) i)
+--}
+
+
+¬∈map-remNRes : {L : Level} (name : Name) (l : List (NRes{L})) → ¬ name ∈ Data.List.map NRes.name (remNRes name l)
+¬∈map-remNRes {L} name (x ∷ l) i with name ≟ NRes.name x
+... | yes p = ¬∈map-remNRes name l i
+¬∈map-remNRes {L} name (x ∷ l) (here px) | no p = p px
+¬∈map-remNRes {L} name (x ∷ l) (there i) | no p = ¬∈map-remNRes name l i
+
+
+∈map-remNRes→ : {L : Level} {name x : Name} {l : List (NRes{L})}
+                 → x ∈ Data.List.map NRes.name (remNRes name l)
+                 → x ∈ Data.List.map NRes.name l
+∈map-remNRes→ {L} {name} {x} {x₁ ∷ l} i with name ≟ NRes.name x₁
+... | yes p = there (∈map-remNRes→ i)
+∈map-remNRes→ {L} {name} {x} {x₁ ∷ l} (here px) | no p = here px
+∈map-remNRes→ {L} {name} {x} {x₁ ∷ l} (there i) | no p = there (∈map-remNRes→ i)
+
+
+→NRes-nodup-remNRes : {L : Level} (name : Name) (l : List (NRes{L})) → NRes-nodup l → NRes-nodup (remNRes name l)
+→NRes-nodup-remNRes {L} name [] nd = nd
+→NRes-nodup-remNRes {L} name (x ∷ l) (d , nd) with name ≟ NRes.name x
+... | yes p rewrite p = →NRes-nodup-remNRes (NRes.name x) l nd
+... | no p = (λ i → d (∈map-remNRes→ i)) , →NRes-nodup-remNRes name l nd
+
+
+NRes-nodup-wdom : (w : 𝕎·) → NRes-nodup (wrdom w)
+NRes-nodup-wdom [] = tt
+NRes-nodup-wdom (cell c r v ∷ w) = ¬∈map-remNRes c (wrdom w) , →NRes-nodup-remNRes c (wrdom w) (NRes-nodup-wdom w)
 
 
 refChainProgress : (w : 𝕎·) (x : Name) (n : ℕ) {r : Res{0ℓ}}
                  → compatibleRef x (chain.seq (𝕎→refChain w) n) r
                  → Σ ℕ (λ m → n < m × progressRef x (chain.seq (𝕎→refChain w) n) (chain.seq (𝕎→refChain w) m))
-refChainProgress w x n {r} (v , i , sat) = suc n , ≤-refl , progressRef-refl x w
+refChainProgress w x n {r} (v , i , sat) = suc n , ≤-refl , p --progressRef-refl x w
+  where
+  p : progressRef x (chain.seq (𝕎→refChain w) n) (chain.seq (𝕎→refChain w) (suc n))
+  p r' nothing i' rewrite i | sym (cell-inj2 (just-inj i')) | cell-inj3 (just-inj i') =
+    Res.c₀  r' , i3 , tt
+    where
+    i1 : mkNRes x r ∈ wrdom (freezeSeq (wrdom w) w n)
+    i1 = getRef→mkNRes∈wrdom {x} {freezeSeq (wrdom w) w n} i
+
+    i2 : mkNRes x r ∈ wrdom w
+    i2 = ∈wrdom-freezeSeq→ (mkNRes x r) (wrdom w) w n i1
+
+    i3 : getRef x (freezeList (wrdom w) (freezeSeq (wrdom w) w n)) ≡ just (cell x r (just (Res.c₀ r')))
+    i3 rewrite sym (cell-inj2 (just-inj i')) =
+      getRef-freezeList≡-nothing {x} {r} {wrdom w}{freezeSeq (wrdom w) w n} (NRes-nodup-wdom w) i2 i
+  p r' (just v') i' rewrite i | sym (cell-inj2 (just-inj i')) | cell-inj3 (just-inj i') =
+    v' , i3 , refl
+    where
+    i1 : mkNRes x r ∈ wrdom (freezeSeq (wrdom w) w n)
+    i1 = getRef→mkNRes∈wrdom {x} {freezeSeq (wrdom w) w n} i
+
+    i2 : mkNRes x r ∈ wrdom w
+    i2 = ∈wrdom-freezeSeq→ (mkNRes x r) (wrdom w) w n i1
+
+    i3 : getRef x (freezeList (wrdom w) (freezeSeq (wrdom w) w n)) ≡ just (cell x r (just v'))
+    i3 rewrite sym (cell-inj2 (just-inj i')) =
+      getRef-freezeList≡-just {x} {r} {wrdom w} {freezeSeq (wrdom w) w n} {v'} i
 
 
 open import progress(PossibleWorldsRef)(choiceRef)(compatibleREF)
@@ -885,8 +1281,8 @@ progressRef-freeze c (cell name r₁ (just v₁) ∷ w) r v i | no p | no q =
   progressRef-freeze c w r v i
 
 
-⊑→progressRef : (c : Name) {w1 w2 : 𝕎·} → w1 ⊑· w2 → progressRef c w1 w2
-⊑→progressRef c {w1} {w2} e r v i
+⊑→progRef : (c : Name) {w1 w2 : 𝕎·} → w1 ⊑· w2 → progRef c w1 w2
+⊑→progRef c {w1} {w2} e r v i
   with ⊑-pres-getRef e i
 ... | v' , i' , s' , f' = v' , i' , f'
 
@@ -904,7 +1300,7 @@ getFreezeRef-aux c w {r} (nothing , comp , sat) fb rewrite comp = 0 , aw
 
     aw : ∀𝕎 (freezeRef c w t) (λ w' _ → Lift 2ℓ (getRefChoice 0 c w' ≡ just t × ¬ freezableRef c w'))
     aw w1 e1 with progressRef-freeze c w r nothing comp
-    ... | v1 , i1 , s1 with ⊑→progressRef c e1 r (just v1) i1
+    ... | v1 , i1 , s1 with ⊑→progRef c e1 r (just v1) i1
     ... | nothing , i2 , s2 = ⊥-elim s2
     ... | just v2 , i2 , s2
       rewrite comp | s2 | i2
