@@ -12,6 +12,7 @@ open import Cubical.Categories.Category.Base
   using (Category ; _^op)
 open import Cubical.Categories.Limits.Terminal
 open import Cubical.Categories.Functor
+open import Cubical.Categories.Presheaf.Base
 open import Cubical.Categories.Instances.Sets
 -- For the category of elements:
 open import Cubical.Categories.Constructions.Elements
@@ -20,7 +21,7 @@ open import Cubical.HITs.TypeQuotients renaming (rec to quot-rec ; elim to quot-
 open import Cubical.HITs.SetQuotients renaming (rec to set-quot-rec ; elim to set-quot-elim)
 open import Cubical.HITs.PropositionalTruncation
   using (map ; map2 ; ∥_∥₁ ; ∣_∣₁ ; squash₁)
-open import Cubical.Relation.Nullary
+open import Cubical.Relation.Nullary hiding (⟪_⟫)
 open import Cubical.Foundations.Univalence
 open import Cubical.Data.Maybe
 open import Cubical.Data.Nat hiding (_·_)
@@ -656,17 +657,49 @@ record CwF {l k m n : Level} : Set(lsuc l ⊔ lsuc k ⊔ lsuc m ⊔ lsuc n) wher
   field
     C  : Category l k
     o  : Terminal C
-    Ty : Functor (C ^op) (SET m)
-    Tm : Functor (∫ᴾ Ty) (SET n)
+    Ty : Presheaf C m
+    Tm : Presheaf (∫ᴾ Ty) n
 
   open Category C
 
   field
-    _⨾_ : (Γ : ob) (σ : fst (Ty .F-ob Γ)) → ob
+    _⨾_ : (Γ : ob)
+          (σ : fst (Ty ⟅ Γ ⟆))
+        → ob
 
-    p : {Γ : ob} (σ : fst (Ty .F-ob Γ)) → Hom[ Γ ⨾ σ , Γ ]
+    p⟨_⟩ : {Γ : ob}
+           (σ : fst (Ty ⟅ Γ ⟆))
+         → Hom[ Γ ⨾ σ , Γ ]
 
-    v : {Γ : ob} (σ : fst (Ty .F-ob Γ)) → (fst (Tm .F-ob ((Γ ⨾ σ) , (Ty .F-hom (p σ)) σ)))
+    v⟨_⟩ : {Γ : ob}
+           (σ : fst (Ty ⟅ Γ ⟆))
+         → fst (Tm ⟅ (Γ ⨾ σ) , (Ty ⟪ p⟨ σ ⟩ ⟫) σ ⟆)
+
+    [_]⟨_,_⟩ : {Γ Δ : ob}
+               (σ : fst (Ty ⟅ Γ ⟆))
+               (f : Hom[ Δ , Γ ])
+               (M : fst (Tm ⟅ Δ , (Ty ⟪ f ⟫) σ ⟆))
+             → Hom[ Δ , Γ ⨾ σ ]
+
+    comprehension-p : {Γ Δ : ob}
+                      (σ : fst (Ty ⟅ Γ ⟆))
+                      (f : Hom[ Δ , Γ ])
+                      (M : fst (Tm ⟅ Δ , (Ty ⟪ f ⟫) σ ⟆))
+                    → p⟨ σ ⟩ ∘ [ σ ]⟨ f , M ⟩ ≡ f
+
+    comprehension-v : {Γ Δ : ob}
+                      (σ : fst (Ty ⟅ Γ ⟆))
+                      (f : Hom[ Δ , Γ ])
+                      (M : fst (Tm ⟅ Δ , (Ty ⟪ f ⟫) σ ⟆))
+                    → (Tm ⟪ [ σ ]⟨ f , M ⟩
+                          , cong (λ h → h σ)
+                             (trans (sym (Ty .F-seq p⟨ σ ⟩ [ σ ]⟨ f , M ⟩))
+                                    (cong (Ty ⟪_⟫) (comprehension-p σ f M)))
+                          ⟫) v⟨ σ ⟩ ≡ M
+
+    -- comprehension-unique : {!!}
+
+    -- TODO: maybe we should define what it means to be a comprehension before defining CwFs
 
 -- 1. Prove that assemblies form a CwF
 -- 2. Show that CwF form a model of TT (unless we take TT to be the initial CwF)
