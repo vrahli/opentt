@@ -3,9 +3,10 @@
 {-# OPTIONS --cubical #-}
 
 open import Cubical.Core.Everything
+open import Cubical.Foundations.Structure
 open import Cubical.Foundations.Prelude
-  using (refl ; sym ; subst ; cong ; cong₂ ; funExt ; isProp ; isSet ; transport ; Square ; _∙_ ;
-         isProp→isSet)
+  using (refl ; sym ; subst ; cong ; congS ; cong₂ ; funExt ; isProp ; isSet ; transport ; Square ; _∙_ ;
+         isProp→isSet ; step-≡ ; _≡⟨⟩_ ; _∎)
 open import Cubical.Foundations.HLevels
   using (isSetRetract ; isSetΣ ; isSet× ; isSet→ ; isSetΠ ; isSet→isGroupoid)
 open import Cubical.Categories.Category.Base
@@ -664,33 +665,33 @@ record CwF {l k m n : Level} : Set(lsuc l ⊔ lsuc k ⊔ lsuc m ⊔ lsuc n) wher
 
   field
     _⨾_ : (Γ : ob)
-          (σ : fst (Ty ⟅ Γ ⟆))
+          (σ : typ (Ty ⟅ Γ ⟆))
         → ob
 
     p⟨_⟩ : {Γ : ob}
-           (σ : fst (Ty ⟅ Γ ⟆))
+           (σ : typ (Ty ⟅ Γ ⟆))
          → Hom[ Γ ⨾ σ , Γ ]
 
     v⟨_⟩ : {Γ : ob}
-           (σ : fst (Ty ⟅ Γ ⟆))
-         → fst (Tm ⟅ (Γ ⨾ σ) , (Ty ⟪ p⟨ σ ⟩ ⟫) σ ⟆)
+           (σ : typ (Ty ⟅ Γ ⟆))
+         → typ (Tm ⟅ (Γ ⨾ σ) , (Ty ⟪ p⟨ σ ⟩ ⟫) σ ⟆)
 
     [_]⟨_,_⟩ : {Γ Δ : ob}
-               (σ : fst (Ty ⟅ Γ ⟆))
+               (σ : typ (Ty ⟅ Γ ⟆))
                (f : Hom[ Δ , Γ ])
-               (M : fst (Tm ⟅ Δ , (Ty ⟪ f ⟫) σ ⟆))
+               (M : typ (Tm ⟅ Δ , (Ty ⟪ f ⟫) σ ⟆))
              → Hom[ Δ , Γ ⨾ σ ]
 
     comprehension-p : {Γ Δ : ob}
-                      (σ : fst (Ty ⟅ Γ ⟆))
+                      (σ : typ (Ty ⟅ Γ ⟆))
                       (f : Hom[ Δ , Γ ])
-                      (M : fst (Tm ⟅ Δ , (Ty ⟪ f ⟫) σ ⟆))
+                      (M : typ (Tm ⟅ Δ , (Ty ⟪ f ⟫) σ ⟆))
                     → p⟨ σ ⟩ ∘ [ σ ]⟨ f , M ⟩ ≡ f
 
     comprehension-v : {Γ Δ : ob}
-                      (σ : fst (Ty ⟅ Γ ⟆))
+                      (σ : typ (Ty ⟅ Γ ⟆))
                       (f : Hom[ Δ , Γ ])
-                      (M : fst (Tm ⟅ Δ , (Ty ⟪ f ⟫) σ ⟆))
+                      (M : typ (Tm ⟅ Δ , (Ty ⟪ f ⟫) σ ⟆))
                     → (Tm ⟪ [ σ ]⟨ f , M ⟩
                           , cong (λ h → h σ)
                              (trans (sym (Ty .F-seq p⟨ σ ⟩ [ σ ]⟨ f , M ⟩))
@@ -698,9 +699,9 @@ record CwF {l k m n : Level} : Set(lsuc l ⊔ lsuc k ⊔ lsuc m ⊔ lsuc n) wher
                           ⟫) v⟨ σ ⟩ ≡ M
 
     comprehension-unique : {Γ Δ : ob}
-                           (σ : fst (Ty ⟅ Γ ⟆))
+                           (σ : typ (Ty ⟅ Γ ⟆))
                            (f : Hom[ Δ , Γ ])
-                           (M : fst (Tm ⟅ Δ , (Ty ⟪ f ⟫) σ ⟆))
+                           (M : typ (Tm ⟅ Δ , (Ty ⟪ f ⟫) σ ⟆))
                            (u : Hom[ Δ , Γ ⨾ σ ])
                            (u-p : p⟨ σ ⟩ ∘ u ≡ f)
                            (u-v : (Tm ⟪ u
@@ -709,6 +710,107 @@ record CwF {l k m n : Level} : Set(lsuc l ⊔ lsuc k ⊔ lsuc m ⊔ lsuc n) wher
                                                 (cong (Ty ⟪_⟫) u-p))
                                       ⟫) v⟨ σ ⟩ ≡ M)
                           → [ σ ]⟨ f , M ⟩ ≡ u
+
+  -- Weakening maps
+
+  q⟨_,_⟩ : {Γ Δ : ob}
+           (f : Hom[ Δ , Γ ])
+           (σ : typ (Ty ⟅ Γ ⟆))
+         → Hom[ Δ ⨾ (Ty ⟪ f ⟫) σ , Γ ⨾ σ ]
+  q⟨_,_⟩ {Γ} {Δ} f σ =
+    [ σ ]⟨ f ∘ p⟨ (Ty ⟪ f ⟫) σ ⟩
+         , transport
+             (cong
+               (λ g → typ (Tm ⟅ (Δ ⨾ (Ty ⟪ f ⟫) σ ) , g σ ⟆))
+               (sym (Ty .F-seq f p⟨ (Ty ⟪ f ⟫) σ ⟩)))
+             v⟨ (Ty ⟪ f ⟫) σ ⟩
+         ⟩
+
+  -- Terms and sections coincide
+
+  term-to-sec : {Γ : ob} {σ : typ (Ty ⟅ Γ ⟆)}
+              → typ (Tm ⟅ Γ , σ ⟆)
+              → Hom[ Γ , Γ ⨾ σ ]
+  term-to-sec {Γ} {σ} M =
+    [ σ ]⟨ id {Γ}
+         , transport (cong (λ f → typ (Tm ⟅ Γ , f σ ⟆)) (sym (Ty .F-id))) M
+         ⟩
+
+  term-to-sec-is-sec : {Γ : ob} {σ : typ (Ty ⟅ Γ ⟆)}
+                       (M : typ (Tm ⟅ Γ , σ ⟆))
+                     → p⟨ σ ⟩ ∘ term-to-sec M ≡ id
+  term-to-sec-is-sec {Γ} {σ} M =
+    comprehension-p
+      σ
+      id
+      (transport (cong (λ f → typ (Tm ⟅ Γ , f σ ⟆)) (sym (Ty .F-id))) M)
+
+  -- TODO: get a term from a section
+
+record supportsΠTypes {l k m n : Level} (𝓒𝔀𝓕 : CwF {l} {k} {m} {n})
+  : Set(lsuc l ⊔ lsuc k ⊔ lsuc m ⊔ lsuc n) where
+  constructor mkΠTypes
+
+  open Functor
+  open CwF 𝓒𝔀𝓕
+  open Category C
+
+  field
+    Π : {Γ : ob}
+        (σ : typ (Ty ⟅ Γ ⟆))
+        (τ : typ (Ty ⟅ Γ ⨾ σ ⟆))
+      → typ (Ty ⟅ Γ ⟆)
+
+    ƛ : {Γ : ob}
+        {σ : typ (Ty ⟅ Γ ⟆)}
+        {τ : typ (Ty ⟅ Γ ⨾ σ ⟆)}
+        (M : typ (Tm ⟅ Γ ⨾ σ , τ ⟆))
+      → typ (Tm ⟅ Γ , Π σ τ ⟆)
+
+    app : {Γ : ob}
+          {σ : typ (Ty ⟅ Γ ⟆)}
+          {τ : typ (Ty ⟅ Γ ⨾ σ ⟆)}
+          (M : typ (Tm ⟅ Γ , Π σ τ ⟆))
+          (N : typ (Tm ⟅ Γ , σ ⟆))
+        → typ (Tm ⟅ Γ , (Ty ⟪ term-to-sec N ⟫) τ ⟆)
+
+    β≡ : {Γ : ob}
+         {σ : typ (Ty ⟅ Γ ⟆)}
+         {τ : typ (Ty ⟅ Γ ⨾ σ ⟆)}
+         (M : typ (Tm ⟅ Γ ⨾ σ , τ ⟆))
+         (N : typ (Tm ⟅ Γ , σ ⟆))
+       → app (ƛ M) N ≡ (Tm ⟪ term-to-sec N , refl ⟫) M
+
+    Πsub : {Γ Δ : ob}
+           {σ : typ (Ty ⟅ Γ ⟆)}
+           {τ : typ (Ty ⟅ Γ ⨾ σ ⟆)}
+           (f : Hom[ Δ , Γ ])
+         → (Ty ⟪ f ⟫) (Π σ τ) ≡ Π ((Ty ⟪ f ⟫) σ) ((Ty ⟪ q⟨ f , σ ⟩ ⟫) τ)
+
+    ƛsub : {Γ Δ : ob}
+           {σ : typ (Ty ⟅ Γ ⟆)}
+           {τ : typ (Ty ⟅ Γ ⨾ σ ⟆)}
+           (M : typ (Tm ⟅ Γ ⨾ σ , τ ⟆))
+           (f : Hom[ Δ , Γ ])
+         → (Tm ⟪ f , Πsub f ⟫) (ƛ M) ≡ ƛ ((Tm ⟪ q⟨ f , σ ⟩ , refl ⟫) M)
+
+    appsub : {Γ Δ : ob}
+             {σ : typ (Ty ⟅ Γ ⟆)}
+             {τ : typ (Ty ⟅ Γ ⨾ σ ⟆)}
+             (M : typ (Tm ⟅ Γ , Π σ τ ⟆))
+             (N : typ (Tm ⟅ Γ , σ ⟆))
+             (f : Hom[ Δ , Γ ])
+           → (Tm ⟪ f
+                 , ((Ty ⟪ f ⟫) ((Ty ⟪ term-to-sec N ⟫) τ)
+                      ≡⟨ cong (λ g → g τ) (sym (Ty .F-seq (term-to-sec N) f)) ⟩
+                    (Ty ⟪ term-to-sec N ∘ f ⟫) τ
+                      ≡⟨ {!!} ⟩ -- by some result we need about how term-to-sec commutes with substitutions (probably to do with weakenings giving pullbacks)
+                    (Ty ⟪ q⟨ f , σ ⟩ ∘ term-to-sec ((Tm ⟪ f , refl ⟫) N) ⟫) τ
+                      ≡⟨ cong (λ g → g τ) (Ty .F-seq q⟨ f , σ ⟩ (term-to-sec ((Tm ⟪ f , refl ⟫) N))) ⟩
+                    (Ty ⟪ term-to-sec ((Tm ⟪ f , refl ⟫) N) ⟫) ((Ty ⟪ q⟨ f , σ ⟩ ⟫) τ)
+                      ∎)
+                 ⟫ ) (app M N) ≡
+               app ((Tm ⟪ f , Πsub f ⟫) M) ((Tm ⟪ f , refl ⟫) N)
 
 -- 1. Prove that assemblies form a CwF
 -- 2. Show that CwF form a model of TT (unless we take TT to be the initial CwF)
