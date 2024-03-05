@@ -697,9 +697,18 @@ record CwF {l k m n : Level} : Set(lsuc l ⊔ lsuc k ⊔ lsuc m ⊔ lsuc n) wher
                                     (cong (Ty ⟪_⟫) (comprehension-p σ f M)))
                           ⟫) v⟨ σ ⟩ ≡ M
 
-    -- comprehension-unique : {!!}
-
-    -- TODO: maybe we should define what it means to be a comprehension before defining CwFs
+    comprehension-unique : {Γ Δ : ob}
+                           (σ : fst (Ty ⟅ Γ ⟆))
+                           (f : Hom[ Δ , Γ ])
+                           (M : fst (Tm ⟅ Δ , (Ty ⟪ f ⟫) σ ⟆))
+                           (u : Hom[ Δ , Γ ⨾ σ ])
+                           (u-p : p⟨ σ ⟩ ∘ u ≡ f)
+                           (u-v : (Tm ⟪ u
+                                      , cong (λ h → h σ)
+                                         (trans (sym (Ty .F-seq p⟨ σ ⟩ u))
+                                                (cong (Ty ⟪_⟫) u-p))
+                                      ⟫) v⟨ σ ⟩ ≡ M)
+                          → [ σ ]⟨ f , M ⟩ ≡ u
 
 -- 1. Prove that assemblies form a CwF
 -- 2. Show that CwF form a model of TT (unless we take TT to be the initial CwF)
