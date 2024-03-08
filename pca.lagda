@@ -442,7 +442,7 @@ module Lambda where
     trans (cong (λ z → if≡ z n (shiftUp v a) (var (σ n z))) p)
           (trans (trans (if≡-prop-≢ (suc x) n (shiftUp v a) (var (σ n (suc x)))
                                     (λ z → ¬sm<m {v} (≤-trans (≤-trans (suc-≤-suc sv≤x) (0 , z)) n≤v)))
-                        (cong var {!!}))
+                        (cong var λ i → {!!}))
                  (cong (shiftUp v) (sym (if≡-prop-≢ x n a (var (σ n x)) x≢n))))
   gsub-shiftUp-suc σ n v a (var x) n≤v | inr (x<sv , p) with if≡-prop x n
   gsub-shiftUp-suc σ n v a (var x) n≤v | inr (x<sv , p) | inl (x≡n , p₁) =
@@ -987,27 +987,56 @@ Example of a CwF
 
 \begin{code}
 
+𝟙Assembly : {l l′ k′ : Level} ⦃ 𝕡 : PCA l ⦄ ⦃ 𝕔 : Comb {l} ⦃ 𝕡 ⦄ ⦄
+          → Assembly {l} {l′} {k′} ⦃ 𝕡 ⦄
+𝟙Assembly {l} {l′} {k′} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ =
+  asm 𝟙|X| _𝟙⊩_ 𝟙inh 𝟙setA 𝟙prop⊩
+  where
+  𝟙|X| : Type l′
+  𝟙|X| = Lift l′ ⊤
+
+  _𝟙⊩_ : |U| → 𝟙|X| → Type k′
+  _𝟙⊩_ p t = Lift k′ ⊤
+
+  𝟙inh : (x : 𝟙|X|) → Σ |U| (λ r → r 𝟙⊩ x)
+  𝟙inh x = Ic , lift tt
+
+  𝟙setA : isSet 𝟙|X|
+  𝟙setA (lift tt) (lift tt) = λ x y → refl
+
+  𝟙prop⊩ : (u : |U|) (x : 𝟙|X|) → isProp (u 𝟙⊩ x)
+  𝟙prop⊩ u x a b = refl
+
+𝟙Assembly-terminal : {l l′ k′ : Level} ⦃ 𝕡 : PCA l ⦄ ⦃ 𝕔 : Comb {l} ⦃ 𝕡 ⦄ ⦄
+                   → isTerminal (Asm l l′ k′) 𝟙Assembly
+𝟙Assembly-terminal {l} {l′} {k′} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ y =
+  morph (λ _ → lift tt) ∣ Ic , (λ x b b⊩x → b , Ic-eqn b , lift tt) ∣₁ ,
+  λ z → {!!}
+
+setMorph : {l : Level} (X Y : Set(l)) (xset : isSet X) (yset : isSet Y)
+           (f : X → Y)
+         → Category.Hom[_,_] (SET l) (X , xset) (Y , yset)
+setMorph {l} X Y xest yset f = f
+
 AsmCwF : {l l′ k′ n : Level}
          {{𝕡 : PCA l}}
          {{𝕔 : Comb {l} {{𝕡}}}}
        → CwF {lsuc l ⊔ lsuc l′ ⊔ lsuc k′} {l ⊔ l′ ⊔ k′} {lsuc l ⊔ lsuc l′ ⊔ lsuc k′} {n}
 AsmCwF {l} {l′} {k′} {n} {{𝕡}} {{𝕔}} =
   cwf (Asm l l′ k′ {{𝕡}} {{𝕔}})
-      {!!}
-      Ty {!!} {--Tm--} {!!} {!!} {!!} {!!} {!!} {!!} {!!}
+      (𝟙Assembly , 𝟙Assembly-terminal)
+      Ty {!Tm!} {--Tm--} {!!} {!!} {!!} {!!} {!!} {!!} {!!}
   where
   open Category (Asm l l′ k′)
 
   Ty : Presheaf (Asm l l′ k′) (lsuc l ⊔ lsuc l′ ⊔ lsuc k′)
   Ty = record { F-ob  = λ Γ → (Assembly.|X| Γ → ∥ Assembly {l} {l′} {k′} ⦃ 𝕡 ⦄ ∥₂) ,
                                isSet→ squash₂ ;
---Σ (Assembly {l} {l′} {k′} ⦃ 𝕡 ⦄) (λ A → Hom[ A , Γ ]) ,
---                              isSetΣ {!!} (λ x → Asm-isSetHom) ;
-                F-hom = λ {Γ} {Δ} c → {!!} ;
-                F-id  = {!!} ;
-                F-seq = {!!} }
+                F-hom = λ {Γ} {Δ} c f d → f (morphism.f c d) ;
+                F-id  = λ {x} → refl ; --funExt (λ z → funExt (λ w → refl)) ;
+                F-seq = λ {x} {y} {z} f g → {!!} }
 
---  Tm : Presheaf (∫ᴾ Ty) n
---  Tm = {!!}
+  Tm : Presheaf (∫ᴾ Ty) n
+  Tm = {!!}
 
 \end{code}
