@@ -22,17 +22,20 @@ open import Cubical.HITs.TypeQuotients renaming (rec to quot-rec ; elim to quot-
 open import Cubical.HITs.SetQuotients renaming (rec to set-quot-rec ; elim to set-quot-elim)
 open import Cubical.HITs.PropositionalTruncation
   using (map ; map2 ; ∥_∥₁ ; ∣_∣₁ ; squash₁)
+open import Cubical.HITs.SetTruncation
+  using (∥_∥₂ ; ∣_∣₂ ; squash₂)
 open import Cubical.Relation.Nullary hiding (⟪_⟫)
 open import Cubical.Foundations.Univalence
 open import Cubical.Data.Maybe
 open import Cubical.Data.Nat hiding (_·_)
 open import Cubical.Data.Nat.Order
-open import Cubical.Data.Empty
+open import Cubical.Data.Sum
+open import Cubical.Data.Empty renaming (elim to ⊥-elim)
 open import Cubical.Data.Prod
 
 open import Level using (Level ; 0ℓ ; Lift ; lift ; lower ; _⊔_) renaming (suc to lsuc)
 import Data.Maybe
-open import Data.Bool hiding (_≟_ ; _∧_ ; _∨_ ; _≤_)
+open import Data.Bool hiding (_≟_ ; _∧_ ; _∨_ ; _≤_ ; _<_)
 open import Data.Unit using (⊤ ; tt)
 
 module pca where
@@ -210,11 +213,37 @@ Examples of a PCA
 \begin{code}
 module Lambda where
 
+  ¬sm<m : {m : ℕ} → ¬ suc m < m
+  ¬sm<m {m} h = ¬m<m {m} (≤-trans (≤-suc ≤-refl) h)
+
   -- increments x if c ≤ x
   sucIf≤ : (c x : ℕ) → ℕ
   sucIf≤ zero x = suc x
   sucIf≤ (suc c) zero = zero
   sucIf≤ (suc c) (suc x) = suc (sucIf≤ c x)
+
+  sucIf≤-prop : (c x : ℕ)
+              → ((c ≤ x) × (sucIf≤ c x ≡ suc x))
+              ⊎ ((x < c) × (sucIf≤ c x ≡ x))
+  sucIf≤-prop zero x = inl (zero-≤ , refl)
+  sucIf≤-prop (suc c) zero = inr (suc-≤-suc zero-≤ , refl)
+  sucIf≤-prop (suc c) (suc x) with sucIf≤-prop c x
+  ... | inl (p , q) = inl (suc-≤-suc p , cong suc q)
+  ... | inr (p , q) = inr (suc-≤-suc p , cong suc q)
+
+  sucIf≤-≤ : (c x : ℕ)
+           → c ≤ x
+           → sucIf≤ c x ≡ suc x
+  sucIf≤-≤ c x c≤x with sucIf≤-prop c x
+  ... | inl (c≤x , p) = p
+  ... | inr (x<c , p) = ⊥-elim {A = λ _ → sucIf≤ c x ≡ suc x} (¬m<m (≤-trans x<c c≤x))
+
+  sucIf≤-< : (c x : ℕ)
+           → x < c
+           → sucIf≤ c x ≡ x
+  sucIf≤-< c x x<c with sucIf≤-prop c x
+  ... | inl (c≤x , p) = ⊥-elim {A = λ _ → sucIf≤ c x ≡ x} (¬m<m (≤-trans x<c c≤x))
+  ... | inr (x<c , p) = p
 
   -- decrements x if c < x
   predIf≤ : (c x : ℕ) → ℕ
@@ -227,6 +256,23 @@ module Lambda where
   if≡ zero (suc _) c d = d
   if≡ (suc _) zero c d = d
   if≡ (suc a) (suc b) c d = if≡ a b c d
+
+  if≡-prop : (a b : ℕ)
+           → ((a ≡ b) × ({T : Set} (c d : T) → if≡ a b c d ≡ c))
+           ⊎ ((¬ a ≡ b) × ({T : Set} (c d : T) → if≡ a b c d ≡ d))
+  if≡-prop zero zero = inl (refl , λ c d → refl)
+  if≡-prop zero (suc b) = inr (znots , λ c d → refl)
+  if≡-prop (suc a) zero = inr (snotz , λ c d → refl)
+  if≡-prop (suc a) (suc b) with if≡-prop a b
+  ... | inl (p , q) = inl (cong suc p , q)
+  ... | inr (p , q) = inr ((λ z → p (injSuc z)) , q)
+
+  if≡-prop-≢ : {T : Set} (a b : ℕ) (c d : T)
+             → ¬ a ≡ b
+             → if≡ a b c d ≡ d
+  if≡-prop-≢ a b c d a≢b with if≡-prop a b
+  ... | inl (p , q) = ⊥-elim {A = λ _ → if≡ a b c d ≡ d} (a≢b p)
+  ... | inr (p , q) = q c d
 
   contra : {A B : Type} → (A → B) → ¬ B → ¬ A
   contra f g x = g (f x)
@@ -304,6 +350,9 @@ module Lambda where
   gsub σ v t (app f a) = app (gsub σ v t f) (gsub σ v t a)
   --gsub σ v t (eq {a} {b} e f) = eq {gsub σ v t a} {gsub σ v t b} (Λ≡-gsub σ v t a b e) f
 
+  sub : Λ → Λ → Λ
+  sub a f = gsub predIf≤ 0 a f
+
   data Λ≡ : Λ → Λ → Set where
     Λ≡refl  : (a : Λ) → Λ≡ a a
     Λ≡sym   : {a b : Λ}
@@ -314,7 +363,7 @@ module Lambda where
             → Λ≡ b c
             → Λ≡ a c
     Λ≡beta  : (f a : Λ)
-            → Λ≡ (app (lam f) a) (gsub predIf≤ 0 a f)
+            → Λ≡ (app (lam f) a) (sub a f)
     Λ≡lam   : {f g : Λ}
             → Λ≡ f g
             → Λ≡ (lam f) (lam g)
@@ -337,20 +386,123 @@ module Lambda where
   gsub-shiftUp n a (app b b₁) = cong₂ app (gsub-shiftUp n a b) (gsub-shiftUp n a b₁)
 
 {--
-Λ≡-gsub : (σ : ℕ → ℕ → ℕ) (v : ℕ) (t a b : Λ)
-        → Λ≡ a b
-        → Λ≡ (gsub σ v t a) (gsub σ v t b)
-Λ≡-gsub σ v t a .a (Λ≡refl .a) = Λ≡refl (gsub σ v t a)
-Λ≡-gsub σ v t a b (Λ≡sym h) = Λ≡sym (Λ≡-gsub σ v t b a h)
-Λ≡-gsub σ v t a b (Λ≡trans {a} {b₁} {b} h h₁) =
-  Λ≡trans (Λ≡-gsub σ v t a b₁ h) (Λ≡-gsub σ v t b₁ b h₁)
-Λ≡-gsub σ v t .(app (lam f) a) .(gsub predIf≤ 0 a f) (Λ≡beta f a) =
-  Λ≡trans (Λ≡beta (gsub σ (suc v) (shiftUp 0 t) f) (gsub σ v t a))
-          {!!}
-Λ≡-gsub σ v t .(lam _) .(lam _) (Λ≡lam {f} {g} h) =
-  Λ≡lam (Λ≡-gsub σ (suc v) (shiftUp 0 t) f g h)
-Λ≡-gsub σ v t .(app _ _) .(app _ _) (Λ≡app {f} {g} {a} {b} h h₁) =
-  Λ≡app (Λ≡-gsub σ v t f g h) (Λ≡-gsub σ v t a b h₁)
+  Λ≡-gsub₁ : (σ : ℕ → ℕ → ℕ) (v : ℕ) (t a b : Λ)
+          → Λ≡ a b
+          → Λ≡ (gsub σ v a t) (gsub σ v b t)
+  Λ≡-gsub₁ σ v t a .a (Λ≡refl .a) = Λ≡refl (gsub σ v t a)
+  Λ≡-gsub₁ σ v t a b (Λ≡sym h) = Λ≡sym (Λ≡-gsub₁ σ v t b a h)
+  Λ≡-gsub₁ σ v t a b (Λ≡trans {a} {b₁} {b} h h₁) =
+    Λ≡trans (Λ≡-gsub₁ σ v t a b₁ h) (Λ≡-gsub₁ σ v t b₁ b h₁)
+  Λ≡-gsub₁ σ v t .(app (lam f) a) .(gsub predIf≤ 0 a f) (Λ≡beta f a) =
+    {!!} {--Λ≡trans (Λ≡beta (gsub σ (suc v) (shiftUp 0 t) f) (gsub σ v t a))
+            {!!}--}
+  Λ≡-gsub₁ σ v t .(lam _) .(lam _) (Λ≡lam {f} {g} h) =
+    Λ≡lam (Λ≡-gsub₁ σ (suc v) (shiftUp 0 t) f g h)
+  Λ≡-gsub₁ σ v t .(app _ _) .(app _ _) (Λ≡app {f} {g} {a} {b} h h₁) =
+    Λ≡app (Λ≡-gsub₁ σ v t f g h) (Λ≡-gsub₁ σ v t a b h₁)
+--}
+
+  shiftUp-shiftUp : (n v : ℕ) (a : Λ)
+                  → n ≤ v
+                  → shiftUp n (shiftUp v a)
+                  ≡ shiftUp (suc v) (shiftUp n a)
+  shiftUp-shiftUp n v (var x) n≤v with sucIf≤-prop v x
+  shiftUp-shiftUp n v (var x) n≤v | inl (v≤x , q) with sucIf≤-prop n x
+  shiftUp-shiftUp n v (var x) n≤v | inl (v≤x , q) | inl (n≤x , q₁) =
+    cong var (trans (cong (sucIf≤ n) q)
+                    (trans (trans (sucIf≤-≤ n (suc x) (≤-trans n≤v (≤-trans v≤x (≤-suc ≤-refl))))
+                                  (cong suc (sym q)))
+                           (cong (sucIf≤ (suc v)) (sym q₁))))
+  shiftUp-shiftUp n v (var x) n≤v | inl (v≤x , q) | inr (x<n , q₁) =
+    ⊥-elim {A = λ _ → var (sucIf≤ n (sucIf≤ v x)) ≡ var (sucIf≤ (suc v) (sucIf≤ n x))}
+           (¬m<m (≤-trans x<n (≤-trans n≤v v≤x)))
+  shiftUp-shiftUp n v (var x) n≤v | inr (x<v , q) with sucIf≤-prop n x
+  shiftUp-shiftUp n v (var x) n≤v | inr (x<v , q) | inl (n≤x , q₁) =
+    cong var (trans (cong (sucIf≤ n) q)
+                    (trans q₁ (trans (cong suc (sym q))
+                                     (cong (sucIf≤ (suc v)) (sym q₁)))))
+  shiftUp-shiftUp n v (var x) n≤v | inr (x<v , q) | inr (x<n , q₁) =
+    cong var (trans (cong (sucIf≤ n) q)
+                    (trans q₁ (trans (sym (sucIf≤-< (suc v) x (≤-trans x<v ≤-sucℕ)))
+                                     (cong (sucIf≤ (suc v)) (sym q₁)))))
+  shiftUp-shiftUp n v (lam a) n≤v = cong lam (shiftUp-shiftUp (suc n) (suc v) a (suc-≤-suc n≤v))
+  shiftUp-shiftUp n v (app a a₁) n≤v = cong₂ app (shiftUp-shiftUp n v a n≤v) (shiftUp-shiftUp n v a₁ n≤v)
+
+  gsub-shiftUp-suc : (σ : ℕ → ℕ → ℕ) (n v : ℕ) (a f : Λ)
+                   → n ≤ v
+                   → gsub σ n (shiftUp v a) (shiftUp (suc v) f)
+                   ≡ shiftUp v (gsub σ n a f)
+  gsub-shiftUp-suc σ n v a (var x) n≤v with sucIf≤-prop (suc v) x
+  gsub-shiftUp-suc σ n v a (var x) n≤v | inl (sv≤x , p) with if≡-prop x n
+  gsub-shiftUp-suc σ n v a (var x) n≤v | inl (sv≤x , p) | inl (x≡n , p₁) =
+    ⊥-elim {A = λ _ → if≡ (sucIf≤ (suc v) x) n (shiftUp v a) (var (σ n (sucIf≤ (suc v) x)))
+                    ≡ shiftUp v (if≡ x n a (var (σ n x)))}
+           (¬m<m (≤-trans (≤-trans sv≤x (0 , x≡n)) n≤v))
+  gsub-shiftUp-suc σ n v a (var x) n≤v | inl (sv≤x , p) | inr (x≢n , p₁) =
+    trans (cong (λ z → if≡ z n (shiftUp v a) (var (σ n z))) p)
+          (trans (trans (if≡-prop-≢ (suc x) n (shiftUp v a) (var (σ n (suc x)))
+                                    (λ z → ¬sm<m {v} (≤-trans (≤-trans (suc-≤-suc sv≤x) (0 , z)) n≤v)))
+                        (cong var {!!}))
+                 (cong (shiftUp v) (sym (if≡-prop-≢ x n a (var (σ n x)) x≢n))))
+  gsub-shiftUp-suc σ n v a (var x) n≤v | inr (x<sv , p) with if≡-prop x n
+  gsub-shiftUp-suc σ n v a (var x) n≤v | inr (x<sv , p) | inl (x≡n , p₁) =
+    trans (cong (λ z → if≡ z n (shiftUp v a) (var (σ n z))) p)
+          (trans (p₁ (shiftUp v a) (var (σ n x)))
+                 (cong (shiftUp v) (sym (p₁ a (var (σ n x))))))
+  gsub-shiftUp-suc σ n v a (var x) n≤v | inr (x<sv , p) | inr (x≢n , p₁) =
+    trans (cong (λ z → if≡ z n (shiftUp v a) (var (σ n z))) p)
+          (trans (p₁ (shiftUp v a) (var (σ n x)))
+                 (trans (cong var {!!})
+                        (cong (shiftUp v) (sym (p₁ a (var (σ n x)))))))
+  gsub-shiftUp-suc σ n v a (lam f) n≤v =
+    cong lam (trans (cong (λ x → gsub σ (suc n) x (shiftUp (suc (suc v)) f))
+                          (shiftUp-shiftUp 0 v a zero-≤))
+                    (gsub-shiftUp-suc σ (suc n) (suc v) (shiftUp 0 a) f (suc-≤-suc n≤v)))
+  gsub-shiftUp-suc σ n v a (app f f₁) n≤v =
+    cong₂ app (gsub-shiftUp-suc σ n v a f n≤v)
+              (gsub-shiftUp-suc σ n v a f₁ n≤v)
+
+  Λ≡-shiftUp : (v : ℕ) (a b : Λ)
+             → Λ≡ a b
+             → Λ≡ (shiftUp v a) (shiftUp v b)
+  Λ≡-shiftUp v a .a (Λ≡refl .a) = Λ≡refl (shiftUp v a)
+  Λ≡-shiftUp v a b (Λ≡sym a≡b) = Λ≡sym (Λ≡-shiftUp v b a a≡b)
+  Λ≡-shiftUp v a b (Λ≡trans {a} {x} {b} a≡b a≡b₁) = Λ≡trans (Λ≡-shiftUp v a x a≡b) (Λ≡-shiftUp v x b a≡b₁)
+  Λ≡-shiftUp v .(app (lam f) a) .(sub a f) (Λ≡beta f a) =
+    Λ≡trans (Λ≡beta (shiftUp (suc v) f) (shiftUp v a)) {!!}
+  Λ≡-shiftUp v .(lam _) .(lam _) (Λ≡lam {f} {g} a≡b) = Λ≡lam (Λ≡-shiftUp (suc v) f g a≡b)
+  Λ≡-shiftUp v .(app _ _) .(app _ _) (Λ≡app {f} {g} {a} {b} a≡b a≡b₁) =
+    Λ≡app (Λ≡-shiftUp v f g a≡b) (Λ≡-shiftUp v a b a≡b₁)
+
+  Λ≡-if≡ : (x v : ℕ) (a b t : Λ)
+         → Λ≡ a b
+         → Λ≡ (if≡ x v a t) (if≡ x v b t)
+  Λ≡-if≡ zero zero a b t a≡b = a≡b
+  Λ≡-if≡ zero (suc v) a b t a≡b = Λ≡refl t
+  Λ≡-if≡ (suc x) zero a b t a≡b = Λ≡refl t
+  Λ≡-if≡ (suc x) (suc v) a b t a≡b = Λ≡-if≡ x v a b t a≡b
+
+  Λ≡-gsub₁ : (σ : ℕ → ℕ → ℕ) (v : ℕ) (t a b : Λ)
+           → Λ≡ a b
+           → Λ≡ (gsub σ v a t) (gsub σ v b t)
+  Λ≡-gsub₁ σ v (var x) a b a≡b =
+    Λ≡-if≡ x v a b (var (σ v x)) a≡b
+  Λ≡-gsub₁ σ v (lam t) a b a≡b =
+    Λ≡lam (Λ≡-gsub₁ σ (suc v) t (shiftUp 0 a) (shiftUp 0 b) (Λ≡-shiftUp 0 a b a≡b))
+  Λ≡-gsub₁ σ v (app t t₁) a b a≡b =
+    Λ≡app (Λ≡-gsub₁ σ v t a b a≡b) (Λ≡-gsub₁ σ v t₁ a b a≡b)
+
+{--
+  Λ≡-gsub : (σ : ℕ → ℕ → ℕ) (v : ℕ) (a b f g : Λ)
+          → Λ≡ a b
+          → Λ≡ f g
+          → Λ≡ (gsub σ v a f) (gsub σ v b g)
+  Λ≡-gsub σ v a b f .f a≡b (Λ≡refl .f) = {!!}
+  Λ≡-gsub σ v a b f g a≡b (Λ≡sym f≡g) = Λ≡sym (Λ≡-gsub σ v b a g f (Λ≡sym a≡b) f≡g)
+  Λ≡-gsub σ v a b f g a≡b (Λ≡trans f≡g f≡g₁) = {!!}
+  Λ≡-gsub σ v a b .(app (lam f) a₁) .(sub a₁ f) a≡b (Λ≡beta f a₁) = {!!}
+  Λ≡-gsub σ v a b .(lam _) .(lam _) a≡b (Λ≡lam f≡g) = {!!}
+  Λ≡-gsub σ v a b .(app _ _) .(app _ _) a≡b (Λ≡app f≡g f≡g₁) = {!!}
 --}
 
 {--
@@ -453,6 +605,17 @@ app/-with-rec = set-quot-rec (λ f → set-quot-rec (λ a → [ app f a ]) (foo 
   PCA-Λ : PCA(0ℓ)
   PCA-Λ = pca Λ/ isSet-Λ/ app/
 
+  sub/ : Λ/ → Λ → Λ/
+  sub/ a f =
+    set-quot-elim
+      {A = Λ}
+      {R = Λ≡}
+      {P = λ _ → Λ/}
+      (λ _ → isSet-Λ/)
+      (λ b → [ sub b f ])
+      (λ b c r → eq/ (sub b f) (sub c f) (Λ≡-gsub₁ predIf≤ 0 f b c r))
+      a
+
   Comb-Λ : Comb{{PCA-Λ}}
   Comb-Λ = comb [ K ] [ S ] Kcond Scond
     where
@@ -464,7 +627,10 @@ app/-with-rec = set-quot-rec (λ f → set-quot-rec (λ a → [ app f a ]) (foo 
 
     Kcond : (a b : Λ/) → app/ (app/ [ K ] a) b ≡ a
     Kcond a b =
-      {!!}
+      trans (cong {x = app/ [ K ] a} {y = sub/ a (lam (var 1))}
+                  (λ x → app/ x b)
+                  {!!})
+            {!!}
  {--app/ [ K ] a ,
       refl ,
       λ b → cong just {!!}--}
@@ -651,7 +817,7 @@ CwFs
 open Contravariant
 
 record CwF {l k m n : Level} : Set(lsuc l ⊔ lsuc k ⊔ lsuc m ⊔ lsuc n) where
-  constructor mkCwF
+  constructor cwf
 
   open Functor
 
@@ -814,5 +980,34 @@ record supportsΠTypes {l k m n : Level} (𝓒𝔀𝓕 : CwF {l} {k} {m} {n})
 
 -- 1. Prove that assemblies form a CwF
 -- 2. Show that CwF form a model of TT (unless we take TT to be the initial CwF)
+
+\end{code}
+
+Example of a CwF
+
+\begin{code}
+
+AsmCwF : {l l′ k′ n : Level}
+         {{𝕡 : PCA l}}
+         {{𝕔 : Comb {l} {{𝕡}}}}
+       → CwF {lsuc l ⊔ lsuc l′ ⊔ lsuc k′} {l ⊔ l′ ⊔ k′} {lsuc l ⊔ lsuc l′ ⊔ lsuc k′} {n}
+AsmCwF {l} {l′} {k′} {n} {{𝕡}} {{𝕔}} =
+  cwf (Asm l l′ k′ {{𝕡}} {{𝕔}})
+      {!!}
+      Ty {!!} {--Tm--} {!!} {!!} {!!} {!!} {!!} {!!} {!!}
+  where
+  open Category (Asm l l′ k′)
+
+  Ty : Presheaf (Asm l l′ k′) (lsuc l ⊔ lsuc l′ ⊔ lsuc k′)
+  Ty = record { F-ob  = λ Γ → (Assembly.|X| Γ → ∥ Assembly {l} {l′} {k′} ⦃ 𝕡 ⦄ ∥₂) ,
+                               isSet→ squash₂ ;
+--Σ (Assembly {l} {l′} {k′} ⦃ 𝕡 ⦄) (λ A → Hom[ A , Γ ]) ,
+--                              isSetΣ {!!} (λ x → Asm-isSetHom) ;
+                F-hom = λ {Γ} {Δ} c → {!!} ;
+                F-id  = {!!} ;
+                F-seq = {!!} }
+
+--  Tm : Presheaf (∫ᴾ Ty) n
+--  Tm = {!!}
 
 \end{code}

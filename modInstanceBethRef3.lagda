@@ -115,12 +115,12 @@ open import props3(W)(M)(C)(K)(G)(X)(N)(enc)
          equalTerms-pres-#⇛-left-BOOL₀! ; equalTerms-pres-#⇛-left-rev-BOOL₀!)
 
 
-{--
-progressing→ΣgetCs≤ : {w : 𝕎·} {c : chain w} {r : Res} (n : Name) (m : ℕ)
-                    → compatible· n w r
-                    → progressing {w} c
-                    → Σ ℕ (λ k → Σ ℂ· (λ l → getRef n (chain.seq c k) ≡ just (mkref n l r) × m < length l))
-progressing→ΣgetCs≤ {w} {c} {r} n 0 comp prog = k , (fst i2 ++ fst i3) , fst (snd i3) , len
+progressing→ΣgetRef≤ : {w : 𝕎·} {c : chain w} {r : Res} (n : Name) (m : ℕ)
+                     → compatible· n w r
+                     → progressing {w} c
+                     → Σ ℕ (λ k → Σ ℂ· (λ v → getRef n (chain.seq c k) ≡ just (cell n r (just v))))
+progressing→ΣgetRef≤ {w} {c} {r} n 0 comp prog =
+  k , fst i3 , fst (snd i3)
   where
     z : Σ ℕ (λ m → 0 < m × progress· n (chain.seq c 0) (chain.seq c m))
     z = prog n 0 (⊑-compatible· (chain.init c) comp)
@@ -128,52 +128,13 @@ progressing→ΣgetCs≤ {w} {c} {r} n 0 comp prog = k , (fst i2 ++ fst i3) , fs
     k : ℕ
     k = fst z
 
-    ltk : 0 < k
-    ltk = fst (snd z)
-
-    i1 : Σ (List ℂ·) (λ l → ∈world (mkcs n l r) w × resSatCs 0 l r)
-    i1 = comp
-
-    i2 : Σ (List ℂ·) (λ l → ∈world (mkcs n l r) (chain.seq c 0) × resSatCs 0 l r)
+    i2 : Σ Mℂ· (λ v → ∈world n r v (chain.seq c 0) × resSatRef v r)
     i2 = ⊑-compatible· (chain.init c) comp
 
-    i3 : Σ (List ℂ·) (λ l → ∈world (mkcs n (fst i2 ++ l) r) (chain.seq c k) × 0 < length l)
-    i3 = snd (snd z) (fst i2) r (fst (snd i2))
-
-    len : 0 < length (proj₁ i2 ++ proj₁ i3)
-    len rewrite length-++ (fst i2) {fst i3} = <-≤-trans (snd (snd i3)) (m≤n+m _ _)
-progressing→ΣgetCs≤ {w} {c} {r} n (suc m) comp prog = k' , l ++ fst i1 , (fst (snd i1)) , len'
-  where
-    ind : Σ ℕ (λ k → Σ (List ℂ·) (λ l → getCs n (chain.seq c k) ≡ just (mkcs n l r) × m < length l))
-    ind = progressing→ΣgetCs≤ {w} {c} n m comp prog
-
-    k : ℕ
-    k = fst ind
-
-    l : List ℂ·
-    l = fst (snd ind)
-
-    g : getCs n (chain.seq c k) ≡ just (mkcs n l r)
-    g = fst (snd (snd ind))
-
-    len : m < length l
-    len = snd (snd (snd ind))
-
-    p : Σ ℕ (λ m → k < m × progress· n (chain.seq c k) (chain.seq c m))
-    p = prog n k (⊑-compatible· (chain⊑n k c) comp)
-
-    k' : ℕ
-    k' = fst p
-
-    ltk' : k < k'
-    ltk' = fst (snd p)
-
-    i1 : Σ (List ℂ·) (λ l' → ∈world (mkcs n (l ++ l') r) (chain.seq c k') × 0 < length l')
-    i1 = snd (snd p) l r g
-
-    len' : suc m < length (l ++ proj₁ i1)
-    len' rewrite length-++ l {fst i1} | suc-+1 m = <-≤-trans (+-monoˡ-< 1 len) (+-monoʳ-≤ (length l) (snd (snd i1)))
---}
+    i3 : Σ ℂ· (λ v → ∈world n r (just v) (chain.seq c k) × satFrozen r (fst i2) (just v))
+    i3 = snd (snd z) r (fst i2) (fst (snd i2))
+progressing→ΣgetRef≤ {w} {c} {r} n (suc m) comp prog =
+  progressing→ΣgetRef≤ {w} {c} n m comp prog
 
 
 IS𝔹-ℕ : (w : 𝕎·) (r : Res) (n : Name) (m : ℕ) (comp : compatible· n w r) → IS𝔹 w
@@ -184,14 +145,13 @@ IS𝔹-ℕ w r n m comp =
     bar w' = w ⊑· w' × Σ ℂ· (λ v → getRef n w' ≡ just (cell n r (just v)))
 
     bars : (c : pchain w) → BarredChain bar (pchain.c c)
-    bars (mkPChain c p) = mkBarredChain {!!} {!!} {!!} {!!} {-- (chain.seq c (fst z)) b (fst z) (⊑-refl· _)
+    bars (mkPChain c p) = mkBarredChain (chain.seq c (fst z)) b (fst z) (⊑-refl· _)
       where
-        z : Σ ℕ (λ k → Σ (List ℂ·) (λ l → getCs n (chain.seq c k) ≡ just (mkcs n l r) × m < length l))
-        z = progressing→ΣgetCs≤ {w} {c} n m comp p
+      z : Σ ℕ (λ k → Σ ℂ· (λ v → getRef n (chain.seq c k) ≡ just (cell n r (just v))))
+      z = progressing→ΣgetRef≤ {w} {c} n m comp p
 
-        b : bar (chain.seq c (fst z))
-        b = chain⊑n (fst z) c , snd z --fst (snd z) , fst (snd (snd z)) , snd (snd (snd z))
---}
+      b : bar (chain.seq c (fst z))
+      b = chain⊑n (fst z) c , snd z
 
     ext : {w' : 𝕎·} → bar w' → w ⊑· w'
     ext {w'} (e , v , g) = e
@@ -201,9 +161,6 @@ IS𝔹-ℕ w r n m comp =
       with ⊑-pres-getRef {w1} {w2} {n} {r} {just v} e g
     ... | just v' , g' , s' , f' rewrite sym f' = ⊑-trans· e' e , v , g'
     ... | nothing , g' , s' , f' = ⊑-trans· e' e , v , ⊥-elim f'
-
-
-\end{code}
 
 
 Typeℂ₀₁-beth-ref : CTerm
@@ -322,23 +279,21 @@ isValueℂ₁-beth-ref = tt
 □·-choice-beth-ref0 : (w : 𝕎·) (c : Name) (m : ℕ) (r : Res)
                     → compatible· c w r
                     → □· w (λ w' _ → Σ ℂ· (λ t → ·ᵣ r m t × ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (2ℓ) (getChoice· m c w'' ≡ just t))))
-□·-choice-beth-ref0 w c m r (v , i , sat) = trivialIS𝔹 w , j -- this is not the correct bar
+□·-choice-beth-ref0 w c m r comp =
+  IS𝔹-ℕ w r c m comp , j
   where
-    j : inIS𝔹 (trivialIS𝔹 w) (λ w' _ → Σ ℂ· (λ t → ·ᵣ r m t × ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (2ℓ) (getChoice· m c w'' ≡ just t))))
-    j {w1} e1 b w2 e2 z = {!!}
--- w3 e3 = {!!}
-{-- rewrite fst (snd (snd (⊑-pres-getRef (⊑-trans· z e3) i))) =
-      lift (fst (⊑-pres-getRef (⊑-trans· z e3) i) ,
-            refl ,
-            getRefChoiceCompatible
-              c r w3 m
-              (fst (⊑-pres-getRef (⊑-trans· z e3) i))
-              (⊑-compatibleRef (⊑-trans· z e3) (v , i , sat))
-              gc)
+    j : inIS𝔹 (IS𝔹-ℕ w r c m comp)
+              (λ w' _ → Σ ℂ· (λ t → ·ᵣ r m t × ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (2ℓ) (getChoice· m c w'' ≡ just t))))
+    j {w1} e1 (e0 , v , g) w2 e2 z =
+      v , getRefChoiceCompatible c r w1 m v (⊑-compatible· e1 comp) g0 , aw
       where
-        gc : getRefChoice m c w3 ≡ just (fst (⊑-pres-getRef (⊑-trans· z e3) i))
-        gc rewrite fst (snd (snd (⊑-pres-getRef (⊑-trans· z e3) i))) = refl
---}
+      g0 : getRefChoice m c w1 ≡ just v
+      g0 rewrite g = refl
+
+      aw : ∀𝕎 w2 (λ w'' _ → Lift 2ℓ (getChoice· m c w'' ≡ just v))
+      aw w3 e3 with ⊑-pres-getRef {w1} {w3} {c} {r} {just v} (⊑-trans· e2 e3) g
+      aw w3 e3 | nothing , g' , s' , f' = lift (⊥-elim f')
+      aw w3 e3 | just v' , g' , s' , f' rewrite g' | f' = lift refl
 
 
 □·-choice-beth-ref : (w : 𝕎·) (c : Name) (m : ℕ) (r : Res)
@@ -386,15 +341,31 @@ getChoice→weakℂ₀₁M w n c h w1 e1 with lower (h w1 e1)
             gtn rewrite lower (q w2 e2) = refl
 
 
+⊑-onlyℂ∈𝕎 : {c : Name} {w1 w2 : 𝕎·} {r : Res{0ℓ}} {u : ℂ·}
+          → w1 ⊑· w2
+          → onlyℂ∈𝕎 u c w2
+          → onlyℂ∈𝕎 u c w1
+⊑-onlyℂ∈𝕎 {c} {w1} {w2} {r} {u} e iso k t z = {!!}
+
+
+→onlyℂ∈𝕎-𝕎→pchain : {c : Name} {w : 𝕎·} {r : Res{0ℓ}} (n : ℕ)
+                  → compatible· c w r
+                  → onlyℂ∈𝕎 (Res.c₀ r) c w
+                  → onlyℂ∈𝕎 (Res.c₀ r) c (𝕎→seq w n)
+→onlyℂ∈𝕎-𝕎→pchain {c} {w} {r} n comp iso k t e = {!!}
+
+
 followChoice-beth-ref : (c : Name) {w : 𝕎·} {f : wPred w} {r : Res{0ℓ}}
                         → □· w f
                         → onlyℂ∈𝕎 (Res.c₀ r) c w
                         → compatible· c w r
                         → freezable· c w
                         → ∃𝕎 w (λ w1 e1 → onlyℂ∈𝕎 (Res.c₀ r) c w1 × compatible· c w1 r × freezable· c w1 × f w1 e1)
-followChoice-beth-ref c {w} {f} {r} (bar , i) ioc comp fb =
-  w , ⊑-refl· _ , ioc , comp , fb ,
-  i e (BarredChain.b bp) (chain.seq (pchain.c pc) (BarredChain.n bp)) (BarredChain.ext bp) (⊑-refl· _)
+followChoice-beth-ref c {w} {f} {r} (bar , i) oc comp fb =
+  w' , e , {!!} , {!!} , {!!}
+--  w' , ⊑-refl· _ , ioc , comp , fb ,
+--  i e (BarredChain.b bp) {!chain.seq (pchain.c pc) (BarredChain.n bp)!} {!!} {!!}
+ -- () () (BarredChain.ext bp) ? --(⊑-refl· _)
   where
     pc : pchain w
     pc = 𝕎→pchain w
@@ -407,6 +378,20 @@ followChoice-beth-ref c {w} {f} {r} (bar , i) ioc comp fb =
 
     e : w ⊑· w'
     e = 𝔹.ext bar (BarredChain.b bp)
+
+    iso : onlyℂ∈𝕎 (Res.c₀ r) c w'
+    iso = ⊑-onlyℂ∈𝕎 {c} {w'} {chain.seq (pchain.c pc) (BarredChain.n bp)} {r}
+                      (BarredChain.ext bp)
+                      (→onlyℂ∈𝕎-𝕎→pchain {c} {w} {r} (BarredChain.n bp) comp oc)
+
+    comp' : compatible· c w' r
+    comp' = ⊑-compatible· e comp
+
+    fb' : freezable· c w'
+    fb' = {!!} --tt
+
+    z : f w' e
+    z = i e (BarredChain.b bp) w' (⊑-refl· w') e
 
 
 
