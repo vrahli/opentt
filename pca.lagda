@@ -911,6 +911,10 @@ record CwF {l k m n : Level} : Set(lsuc l ⊔ lsuc k ⊔ lsuc m ⊔ lsuc n) wher
       id
       (transport (cong (λ f → typ (Tm ⟅ Γ , f σ ⟆)) (sym (Ty .F-id))) M)
 
+  sec-to-term : {Γ : ob} {σ : typ (Ty ⟅ Γ ⟆)} (f : Hom[ Γ , Γ ⨾ σ ])
+                → (f ⋆ p⟨ σ ⟩ ≡ id) → typ (Tm ⟅ Γ , σ ⟆)
+  sec-to-term = {!!}
+
   -- TODO: get a term from a section
 
 record supportsΠTypes {l k m n : Level} (𝓒𝔀𝓕 : CwF {l} {k} {m} {n})
@@ -1009,5 +1013,8 @@ AsmCwF {l} {l′} {k′} {n} {{𝕡}} {{𝕔}} =
 
 --  Tm : Presheaf (∫ᴾ Ty) n
 --  Tm = {!!}
+
+-- --}
+-- --}
 
 \end{code}
