@@ -6,11 +6,11 @@ open import Cubical.Core.Everything
 open import Cubical.Foundations.Structure
 open import Cubical.Foundations.Prelude
   using (refl ; sym ; subst ; cong ; congS ; cong₂ ; funExt ; isProp ; isSet ; transport ; Square ; _∙_ ;
-         isProp→isSet ; step-≡ ; _≡⟨⟩_ ; _∎)
+         isProp→isSet ; step-≡ ; _≡⟨⟩_ ; _∎ ; isContr)
 open import Cubical.Foundations.HLevels
   using (isSetRetract ; isSetΣ ; isSet× ; isSet→ ; isSetΠ ; isSet→isGroupoid)
 open import Cubical.Categories.Category.Base
-  using (Category ; _^op)
+  using (Category ; _^op ; _[_,_])
 open import Cubical.Categories.Limits.Terminal
 open import Cubical.Categories.Functor
 open import Cubical.Categories.Presheaf.Base
@@ -997,8 +997,16 @@ Example of a CwF
 𝟙Assembly-terminal : {l l′ k′ : Level} ⦃ 𝕡 : PCA l ⦄ ⦃ 𝕔 : Comb {l} ⦃ 𝕡 ⦄ ⦄
                    → isTerminal (Asm l l′ k′) 𝟙Assembly
 𝟙Assembly-terminal {l} {l′} {k′} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ y =
-  morph (λ _ → lift tt) ∣ Ic , (λ x b b⊩x → b , Ic-eqn b , lift tt) ∣₁ ,
-  λ z → {!!}
+  m , m≡
+  where
+  m : morphism y 𝟙Assembly
+  m = morph (λ _ → lift tt) ∣ Ic , (λ x b b⊩x → b , Ic-eqn b , lift tt) ∣₁
+
+  m≡ : (n : morphism y 𝟙Assembly) → m ≡ n
+  m≡ (morph n ncond) =
+    cong₂ morph
+          (funExt (λ x → refl))
+          (squash₁ _ _)
 
 setMorph : {l : Level} (X Y : Set(l)) (xset : isSet X) (yset : isSet Y)
            (f : X → Y)
