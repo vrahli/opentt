@@ -251,6 +251,45 @@ module Lambda where
   predIf≤ zero (suc x) = x
   predIf≤ (suc c) (suc x) = suc (predIf≤ c x)
 
+  predIf≤-suc-prop : (c x : ℕ)
+                   → ((c ≤ x) × (predIf≤ c (suc x) ≡ x))
+                   ⊎ ((x < c) × (predIf≤ c (suc x) ≡ suc x))
+  predIf≤-suc-prop zero x = inl (zero-≤ , refl)
+  predIf≤-suc-prop (suc c) zero = inr (suc-≤-suc zero-≤ , refl)
+  predIf≤-suc-prop (suc c) (suc x) with predIf≤-suc-prop c x
+  predIf≤-suc-prop (suc c) (suc x) | inl (c≤x , p) = inl (suc-≤-suc c≤x , cong suc p)
+  predIf≤-suc-prop (suc c) (suc x) | inr (x<c , p) = inr (suc-≤-suc x<c , cong suc p)
+
+  predIf≤-suc-≤ : (c x : ℕ)
+                → c ≤ x
+                → predIf≤ c (suc x) ≡ x
+  predIf≤-suc-≤ c x c≤x with predIf≤-suc-prop c x
+  predIf≤-suc-≤ c x c≤x | inl (c≤x₁ , p) = p
+  predIf≤-suc-≤ c x c≤x | inr (x<c₁ , p) =
+    ⊥-elim {A = λ _ → predIf≤ c (suc x) ≡ x} (¬m<m (≤-trans x<c₁ c≤x))
+
+  sucIf≤-predIf≤-< : (v c x : ℕ)
+                   → c < x
+                   → v < x
+                   → sucIf≤ v (predIf≤ c x) ≡ x
+  sucIf≤-predIf≤-< v c 0 c<x v<x = ⊥-elim {A = λ _ → sucIf≤ v zero ≡ zero} (¬-<-zero c<x)
+  sucIf≤-predIf≤-< v c (suc x) c<sx v<sx =
+    trans (cong (sucIf≤ v) (predIf≤-suc-≤ c x (pred-≤-pred c<sx)))
+          (sucIf≤-≤ v x (pred-≤-pred v<sx))
+
+  sucIf≤-predIf≤≡predIf≤ : (v n x : ℕ)
+                         → ¬ x ≡ n
+                         → n ≤ v
+                         → x ≤ v
+                         → sucIf≤ v (predIf≤ n x) ≡ predIf≤ n x
+  sucIf≤-predIf≤≡predIf≤ v 0 0 x≢n n≤v x≤v = sucIf≤-< v zero (≤-trans (⊥-elim {A = λ _ → 1 ≤ zero} (x≢n refl)) n≤v)
+  sucIf≤-predIf≤≡predIf≤ v (suc n) 0 x≢sn sn≤v x≤v = sucIf≤-< v zero (≤-trans (suc-≤-suc zero-≤) sn≤v)
+  sucIf≤-predIf≤≡predIf≤ v n (suc x) sx≢n n≤v sx≤v with predIf≤-suc-prop n x
+  sucIf≤-predIf≤≡predIf≤ v n (suc x) sx≢n n≤v sx≤v | inl (n≤x , p) =
+    trans (trans (cong (sucIf≤ v) p) (sucIf≤-< v x sx≤v)) (sym p)
+  sucIf≤-predIf≤≡predIf≤ v n (suc x) sx≢n n≤v sx≤v | inr (x<n , p) =
+    trans (trans (cong (sucIf≤ v) p) (sucIf≤-< v (suc x) (≤-trans (≤→< x<n sx≢n) n≤v))) (sym p)
+
   if≡ : {T : Set} (a b : ℕ) (c d : T) → T
   if≡ zero zero c d = c
   if≡ zero (suc _) c d = d
@@ -385,23 +424,6 @@ module Lambda where
   gsub-shiftUp n a (lam b) = cong lam (gsub-shiftUp (suc n) (shiftUp 0 a) b)
   gsub-shiftUp n a (app b b₁) = cong₂ app (gsub-shiftUp n a b) (gsub-shiftUp n a b₁)
 
-{--
-  Λ≡-gsub₁ : (σ : ℕ → ℕ → ℕ) (v : ℕ) (t a b : Λ)
-          → Λ≡ a b
-          → Λ≡ (gsub σ v a t) (gsub σ v b t)
-  Λ≡-gsub₁ σ v t a .a (Λ≡refl .a) = Λ≡refl (gsub σ v t a)
-  Λ≡-gsub₁ σ v t a b (Λ≡sym h) = Λ≡sym (Λ≡-gsub₁ σ v t b a h)
-  Λ≡-gsub₁ σ v t a b (Λ≡trans {a} {b₁} {b} h h₁) =
-    Λ≡trans (Λ≡-gsub₁ σ v t a b₁ h) (Λ≡-gsub₁ σ v t b₁ b h₁)
-  Λ≡-gsub₁ σ v t .(app (lam f) a) .(gsub predIf≤ 0 a f) (Λ≡beta f a) =
-    {!!} {--Λ≡trans (Λ≡beta (gsub σ (suc v) (shiftUp 0 t) f) (gsub σ v t a))
-            {!!}--}
-  Λ≡-gsub₁ σ v t .(lam _) .(lam _) (Λ≡lam {f} {g} h) =
-    Λ≡lam (Λ≡-gsub₁ σ (suc v) (shiftUp 0 t) f g h)
-  Λ≡-gsub₁ σ v t .(app _ _) .(app _ _) (Λ≡app {f} {g} {a} {b} h h₁) =
-    Λ≡app (Λ≡-gsub₁ σ v t f g h) (Λ≡-gsub₁ σ v t a b h₁)
---}
-
   shiftUp-shiftUp : (n v : ℕ) (a : Λ)
                   → n ≤ v
                   → shiftUp n (shiftUp v a)
@@ -428,39 +450,41 @@ module Lambda where
   shiftUp-shiftUp n v (lam a) n≤v = cong lam (shiftUp-shiftUp (suc n) (suc v) a (suc-≤-suc n≤v))
   shiftUp-shiftUp n v (app a a₁) n≤v = cong₂ app (shiftUp-shiftUp n v a n≤v) (shiftUp-shiftUp n v a₁ n≤v)
 
-  gsub-shiftUp-suc : (σ : ℕ → ℕ → ℕ) (n v : ℕ) (a f : Λ)
-                   → n ≤ v
-                   → gsub σ n (shiftUp v a) (shiftUp (suc v) f)
-                   ≡ shiftUp v (gsub σ n a f)
-  gsub-shiftUp-suc σ n v a (var x) n≤v with sucIf≤-prop (suc v) x
-  gsub-shiftUp-suc σ n v a (var x) n≤v | inl (sv≤x , p) with if≡-prop x n
-  gsub-shiftUp-suc σ n v a (var x) n≤v | inl (sv≤x , p) | inl (x≡n , p₁) =
-    ⊥-elim {A = λ _ → if≡ (sucIf≤ (suc v) x) n (shiftUp v a) (var (σ n (sucIf≤ (suc v) x)))
-                    ≡ shiftUp v (if≡ x n a (var (σ n x)))}
-           (¬m<m (≤-trans (≤-trans sv≤x (0 , x≡n)) n≤v))
-  gsub-shiftUp-suc σ n v a (var x) n≤v | inl (sv≤x , p) | inr (x≢n , p₁) =
-    trans (cong (λ z → if≡ z n (shiftUp v a) (var (σ n z))) p)
-          (trans (trans (if≡-prop-≢ (suc x) n (shiftUp v a) (var (σ n (suc x)))
-                                    (λ z → ¬sm<m {v} (≤-trans (≤-trans (suc-≤-suc sv≤x) (0 , z)) n≤v)))
-                        (cong var λ i → {!!}))
-                 (cong (shiftUp v) (sym (if≡-prop-≢ x n a (var (σ n x)) x≢n))))
-  gsub-shiftUp-suc σ n v a (var x) n≤v | inr (x<sv , p) with if≡-prop x n
-  gsub-shiftUp-suc σ n v a (var x) n≤v | inr (x<sv , p) | inl (x≡n , p₁) =
-    trans (cong (λ z → if≡ z n (shiftUp v a) (var (σ n z))) p)
-          (trans (p₁ (shiftUp v a) (var (σ n x)))
-                 (cong (shiftUp v) (sym (p₁ a (var (σ n x))))))
-  gsub-shiftUp-suc σ n v a (var x) n≤v | inr (x<sv , p) | inr (x≢n , p₁) =
-    trans (cong (λ z → if≡ z n (shiftUp v a) (var (σ n z))) p)
-          (trans (p₁ (shiftUp v a) (var (σ n x)))
-                 (trans (cong var {!!})
-                        (cong (shiftUp v) (sym (p₁ a (var (σ n x)))))))
-  gsub-shiftUp-suc σ n v a (lam f) n≤v =
-    cong lam (trans (cong (λ x → gsub σ (suc n) x (shiftUp (suc (suc v)) f))
+  sub-shiftUp-suc : (n v : ℕ) (a f : Λ)
+                  → n ≤ v
+                  → gsub predIf≤ n (shiftUp v a) (shiftUp (suc v) f)
+                  ≡ shiftUp v (gsub predIf≤ n a f)
+  sub-shiftUp-suc n v a (var x) n≤v with sucIf≤-prop (suc v) x
+  sub-shiftUp-suc n v a (var x) n≤v | inl (sv≤x , p) =
+    trans (cong (λ z → if≡ z n (shiftUp v a) (var (predIf≤ n z))) p)
+          (trans (if≡-prop-≢ (suc x) n (shiftUp v a) (var (predIf≤ n (suc x)))
+                             (λ z → ¬m<m (≤-trans (≤-trans (0 , z) (≤-trans n≤v (1 , refl))) sv≤x)))
+                 (trans (cong var (trans (predIf≤-suc-≤ n x (≤-trans n≤v (≤-trans (1 , refl) sv≤x)))
+                                         (sym (sucIf≤-predIf≤-< v n x (≤-trans (suc-≤-suc n≤v) sv≤x) sv≤x))))
+                        (cong (shiftUp v) (sym (if≡-prop-≢ x n a (var (predIf≤ n x))
+                              (λ z → ¬m<m (≤-trans (suc-≤-suc (≤-trans (0 , z) n≤v)) sv≤x)))))))
+  sub-shiftUp-suc n v a (var x) n≤v | inr (x<sv , p) with if≡-prop x n
+  sub-shiftUp-suc n v a (var x) n≤v | inr (x<sv , p) | inl (x≡n , q) =
+    trans (cong (λ z → if≡ z n (shiftUp v a) (var (predIf≤ n z))) p)
+          (trans (q (shiftUp v a) (var (predIf≤ n x)))
+                 (cong (shiftUp v) (sym (q a (var (predIf≤ n x))))))
+  sub-shiftUp-suc n v a (var x) n≤v | inr (x<sv , p) | inr (x≢n , q) =
+    trans (cong (λ z → if≡ z n (shiftUp v a) (var (predIf≤ n z))) p)
+          (trans (q (shiftUp v a) (var (predIf≤ n x)))
+                 (trans (cong var (sym (sucIf≤-predIf≤≡predIf≤ v n x x≢n n≤v (pred-≤-pred x<sv))))
+                        (cong (shiftUp v) (sym (q a (var (predIf≤ n x)))))))
+  sub-shiftUp-suc n v a (lam f) n≤v =
+    cong lam (trans (cong (λ x → gsub predIf≤ (suc n) x (shiftUp (suc (suc v)) f))
                           (shiftUp-shiftUp 0 v a zero-≤))
-                    (gsub-shiftUp-suc σ (suc n) (suc v) (shiftUp 0 a) f (suc-≤-suc n≤v)))
-  gsub-shiftUp-suc σ n v a (app f f₁) n≤v =
-    cong₂ app (gsub-shiftUp-suc σ n v a f n≤v)
-              (gsub-shiftUp-suc σ n v a f₁ n≤v)
+                    (sub-shiftUp-suc (suc n) (suc v) (shiftUp 0 a) f (suc-≤-suc n≤v)))
+  sub-shiftUp-suc n v a (app f f₁) n≤v =
+    cong₂ app (sub-shiftUp-suc n v a f n≤v)
+              (sub-shiftUp-suc n v a f₁ n≤v)
+
+  ≡→Λ≡ : {a b : Λ}
+       → a ≡ b
+       → Λ≡ a b
+  ≡→Λ≡ {a} {b} a≡b = subst (λ a → Λ≡ a b) (sym a≡b) (Λ≡refl b)
 
   Λ≡-shiftUp : (v : ℕ) (a b : Λ)
              → Λ≡ a b
@@ -469,7 +493,8 @@ module Lambda where
   Λ≡-shiftUp v a b (Λ≡sym a≡b) = Λ≡sym (Λ≡-shiftUp v b a a≡b)
   Λ≡-shiftUp v a b (Λ≡trans {a} {x} {b} a≡b a≡b₁) = Λ≡trans (Λ≡-shiftUp v a x a≡b) (Λ≡-shiftUp v x b a≡b₁)
   Λ≡-shiftUp v .(app (lam f) a) .(sub a f) (Λ≡beta f a) =
-    Λ≡trans (Λ≡beta (shiftUp (suc v) f) (shiftUp v a)) {!!}
+    Λ≡trans (Λ≡beta (shiftUp (suc v) f) (shiftUp v a))
+            (≡→Λ≡ (sub-shiftUp-suc 0 v a f zero-≤))
   Λ≡-shiftUp v .(lam _) .(lam _) (Λ≡lam {f} {g} a≡b) = Λ≡lam (Λ≡-shiftUp (suc v) f g a≡b)
   Λ≡-shiftUp v .(app _ _) .(app _ _) (Λ≡app {f} {g} {a} {b} a≡b a≡b₁) =
     Λ≡app (Λ≡-shiftUp v f g a≡b) (Λ≡-shiftUp v a b a≡b₁)
@@ -491,48 +516,6 @@ module Lambda where
     Λ≡lam (Λ≡-gsub₁ σ (suc v) t (shiftUp 0 a) (shiftUp 0 b) (Λ≡-shiftUp 0 a b a≡b))
   Λ≡-gsub₁ σ v (app t t₁) a b a≡b =
     Λ≡app (Λ≡-gsub₁ σ v t a b a≡b) (Λ≡-gsub₁ σ v t₁ a b a≡b)
-
-{--
-  Λ≡-gsub : (σ : ℕ → ℕ → ℕ) (v : ℕ) (a b f g : Λ)
-          → Λ≡ a b
-          → Λ≡ f g
-          → Λ≡ (gsub σ v a f) (gsub σ v b g)
-  Λ≡-gsub σ v a b f .f a≡b (Λ≡refl .f) = {!!}
-  Λ≡-gsub σ v a b f g a≡b (Λ≡sym f≡g) = Λ≡sym (Λ≡-gsub σ v b a g f (Λ≡sym a≡b) f≡g)
-  Λ≡-gsub σ v a b f g a≡b (Λ≡trans f≡g f≡g₁) = {!!}
-  Λ≡-gsub σ v a b .(app (lam f) a₁) .(sub a₁ f) a≡b (Λ≡beta f a₁) = {!!}
-  Λ≡-gsub σ v a b .(lam _) .(lam _) a≡b (Λ≡lam f≡g) = {!!}
-  Λ≡-gsub σ v a b .(app _ _) .(app _ _) a≡b (Λ≡app f≡g f≡g₁) = {!!}
---}
-
-{--
-shiftUp-gsub : (σ : ℕ → ℕ → ℕ) (n m : ℕ) (a b : Λ)
-             → n ≤ m
-             → shiftUp n (gsub σ m a b) ≡ gsub σ (suc m) (shiftUp n a) (shiftUp n b)
-shiftUp-gsub σ n m a (var x) n≤m = {!!}
-shiftUp-gsub σ n m a (lam b) n≤m =
-  cong lam (trans (shiftUp-gsub σ (suc n) (suc m) (shiftUp 0 a) b (s≤s n≤m))
-                  (cong (λ x → gsub σ (2+ m) x (shiftUp (suc n) b))
-                        {!!}))
-shiftUp-gsub σ n m a (app b b₁) n≤m = cong₂ app (shiftUp-gsub σ n m a b n≤m) (shiftUp-gsub σ n m a b₁ n≤m)
---shiftUp-gsub σ n m a (eq x i) n≤m = {!!}
---}
-
-{--
-Λ≡-shiftUp : (n : ℕ) (a b : Λ) → Λ≡ a b → Λ≡ (shiftUp n a) (shiftUp n b)
-Λ≡-shiftUp n a .a (Λ≡refl .a) = Λ≡refl _
-Λ≡-shiftUp n a b (Λ≡sym h) = Λ≡sym (Λ≡-shiftUp n b a h)
-Λ≡-shiftUp n a b (Λ≡trans {a} {x} {b} h h₁) = Λ≡trans (Λ≡-shiftUp n a x h) (Λ≡-shiftUp n x b h₁)
-Λ≡-shiftUp n .(app (lam f) a) .(gsub predIf≤ 0 a f) (Λ≡beta f a) =
-  {!!}
-  -- Not terminating
-  {--Λ≡trans {!!} {!!}--}
-  {--subst (λ x → Λ≡ (app (lam (shiftUp (suc n) f)) (shiftUp n a)) x)
-        {!shiftUp-gsub predIf≤ n 0!}
-        {!!}--}
-Λ≡-shiftUp n .(lam f) .(lam g) (Λ≡lam {f} {g} h) = Λ≡lam (Λ≡-shiftUp (suc n) f g h)
-Λ≡-shiftUp n .(app f a) .(app g b) (Λ≡app {f} {g} {a} {b} h h₁) = Λ≡app (Λ≡-shiftUp n f g h) (Λ≡-shiftUp n a b h₁)
---}
 
   Λ-Discrete : Discrete Λ
   Λ-Discrete (var x)   (var y)   = decRec
