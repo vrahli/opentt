@@ -1034,13 +1034,19 @@ Example of a CwF
 𝟘Assembly-initial {l} {l′} {k′} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ y =
   m , m≡
   where
+  f : Assembly.|X| (𝟘Assembly {l} {l′} {k′}) → Assembly.|X| y
+  f ()
+
+  fcond : ∥morphismCond∥ 𝟘Assembly y f
+  fcond = ∣ Ic , (λ x b ()) ∣₁
+
   m : morphism 𝟘Assembly y
-  m = morph (λ ()) ∣ Ic , (λ x b ()) ∣₁
+  m = morph f fcond
 
   m≡ : (n : morphism 𝟘Assembly y) → m ≡ n
   m≡ (morph n ncond) =
     cong₂ morph
-          (funExt (λ ()))
+          (funExt λ ())
           {!squash₁ _ _!}
 
 setMorph : {l : Level} (X Y : Set(l)) (xset : isSet X) (yset : isSet Y)
@@ -1055,7 +1061,7 @@ AsmCwF : {l l′ k′ n : Level}
 AsmCwF {l} {l′} {k′} {n} {{𝕡}} {{𝕔}} =
   cwf (Asm l l′ k′ {{𝕡}} {{𝕔}})
       (𝟙Assembly , 𝟙Assembly-terminal)
-      Ty {!Tm!} {--Tm--} {!!} {!!} {!!} {!!} {!!} {!!} {!!}
+      Ty {!Tm!} {!!} {!!} {!!} {!!} {!!} {!!} {!!}
   where
   open Category (Asm l l′ k′)
 
@@ -1063,17 +1069,15 @@ AsmCwF {l} {l′} {k′} {n} {{𝕡}} {{𝕔}} =
   Ty = record { F-ob  = λ Γ → (Assembly.|X| Γ → ∥ Assembly {l} {l′} {k′} ⦃ 𝕡 ⦄ ∥₂) ,
                                isSet→ squash₂ ;
                 F-hom = λ {Γ} {Δ} c f d → f (morphism.f c d) ;
-                F-id  = λ {x} → refl ; --funExt (λ z → funExt (λ w → refl)) ;
+                F-id  = λ {x} → refl ;
                 F-seq = λ {x} {y} {z} f g → {!!} }
 
   Tm : Presheaf (∫ᴾ Ty) n
-  Tm = record { F-ob  = λ U → ∥ Σ {!(γ : Assembly.|X| Γ) → ?!} {!!} ∥₂ ,
-                              squash₂ ;
+  Tm = record { F-ob  = λ ΓU@(Γ , U) → ∥ Σ ((γ : Assembly.|X| Γ) → {!!}) {!!} ∥₂ ,
+                                       squash₂ ;
                 F-hom = {!!} ;
                 F-id  = {!!} ;
                 F-seq = {!!} }
 
--- --}
--- --}
 
 \end{code}
