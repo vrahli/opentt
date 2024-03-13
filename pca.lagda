@@ -25,6 +25,7 @@ open import Cubical.HITs.PropositionalTruncation
   using (map ; map2 ; ∥_∥₁ ; ∣_∣₁ ; squash₁)
 open import Cubical.HITs.SetTruncation
   using (∥_∥₂ ; ∣_∣₂ ; squash₂)
+  renaming (rec to rec∥₂)
 open import Cubical.Relation.Nullary hiding (⟪_⟫)
 open import Cubical.Foundations.Univalence
 open import Cubical.Data.Maybe
@@ -1044,10 +1045,18 @@ Example of a CwF
   m = morph f fcond
 
   m≡ : (n : morphism 𝟘Assembly y) → m ≡ n
-  m≡ (morph n ncond) =
-    cong₂ morph
-          (funExt λ ())
-          {!squash₁ _ _!}
+  m≡ (morph n ncond) = c ncond
+    -- why not the more direct proof?
+    --   cong₂ morph (funExt λ ()) (squash₁ _ _)
+    where
+    n≡f : n ≡ f
+    n≡f = funExt (λ ())
+
+    c : (ncond : ∥morphismCond∥ 𝟘Assembly y n) →  m ≡ morph n ncond
+    c = subst
+         (λ n → (ncond : ∥morphismCond∥ 𝟘Assembly y n) → m ≡ morph n ncond)
+         (sym n≡f)
+         (λ ncond → cong₂ morph refl (squash₁ _ _))
 
 setMorph : {l : Level} (X Y : Set(l)) (xset : isSet X) (yset : isSet Y)
            (f : X → Y)
@@ -1068,13 +1077,23 @@ AsmCwF {l} {l′} {k′} {n} {{𝕡}} {{𝕔}} =
   Ty : Presheaf (Asm l l′ k′) (lsuc l ⊔ lsuc l′ ⊔ lsuc k′)
   Ty = record { F-ob  = λ Γ → (Assembly.|X| Γ → ∥ Assembly {l} {l′} {k′} ⦃ 𝕡 ⦄ ∥₂) ,
                                isSet→ squash₂ ;
-                F-hom = λ {Γ} {Δ} c f d → f (morphism.f c d) ;
+                F-hom = hom ;
                 F-id  = λ {x} → refl ;
-                F-seq = λ {x} {y} {z} f g → {!!} }
+                F-seq = seq }
+     where
+     hom : {x y : Assembly {l} {l′} {k′} ⦃ 𝕡 ⦄}
+                → morphism y x
+                → (Assembly.|X| x → ∥ Assembly {l} {l′} {k′} ⦃ 𝕡 ⦄ ∥₂)
+                → (Assembly.|X| y → ∥ Assembly {l} {l′} {k′} ⦃ 𝕡 ⦄ ∥₂)
+     hom {Γ} {Δ} c f d = f (morphism.f c d)
+
+     seq : {x y z : Assembly {l} {l′} {k′} ⦃ 𝕡 ⦄} (f : morphism y z) (g : morphism x y)
+         → hom (morphism-comp g f) ≡ λ x → (hom g) ((hom f) x)
+     seq f g = refl
 
   Tm : Presheaf (∫ᴾ Ty) {!!}
   Tm = record { F-ob  = λ ΓU@(Γ , U) → ∥ Σ ((γ : Assembly.|X| Γ) → {!Assembly.|X| (U γ)!}) {!!} ∥₂ ,
-                                       squash₂ ;
+                                       squash₂ ; -- rec∥₂ {!!} {!!} {!!}
                                        -- This doesn't quite work because Assembly is truncated in Ty
                 F-hom = {!!} ;
                 F-id  = {!!} ;
