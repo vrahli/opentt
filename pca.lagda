@@ -1058,6 +1058,31 @@ Example of a CwF
          (sym n≡f)
          (λ ncond → cong₂ morph refl (squash₁ _ _))
 
+Discrete-Lift : {l k : Level} {A : Set l} → Discrete A → Discrete (Lift k A)
+Discrete-Lift {l} {k} {A} d (lift x) (lift y) with d x y
+... | yes p = yes (cong lift p)
+... | no p = no (λ q → p (cong lower q))
+
+ℕAssembly : {l l′ k′ : Level} ⦃ 𝕡 : PCA l ⦄ ⦃ 𝕔 : Comb {l} ⦃ 𝕡 ⦄ ⦄
+          → Assembly {l} {l′} {k′} ⦃ 𝕡 ⦄
+ℕAssembly {l} {l′} {k′} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ =
+  asm ℕ|X| _ℕ⊩_ ℕinh ℕsetA ℕprop⊩
+  where
+  ℕ|X| : Type l′
+  ℕ|X| = Lift l′ ℕ
+
+  _ℕ⊩_ : |U| → ℕ|X| → Type k′
+  _ℕ⊩_ p (lift n) = {!!}
+
+  ℕinh : (x : ℕ|X|) → Σ |U| (λ r → r ℕ⊩ x)
+  ℕinh (lift n) = {!!}
+
+  ℕsetA : isSet ℕ|X|
+  ℕsetA = Discrete→isSet (Discrete-Lift discreteℕ)
+
+  ℕprop⊩ : (u : |U|) (x : ℕ|X|) → isProp (u ℕ⊩ x)
+  ℕprop⊩ u x a b = {!!}
+
 setMorph : {l : Level} (X Y : Set(l)) (xset : isSet X) (yset : isSet Y)
            (f : X → Y)
          → Category.Hom[_,_] (SET l) (X , xset) (Y , yset)
