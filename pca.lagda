@@ -12,6 +12,7 @@ open import Cubical.Foundations.HLevels
 open import Cubical.Categories.Category.Base
   using (Category ; _^op ; _[_,_])
 open import Cubical.Categories.Limits.Terminal
+open import Cubical.Categories.Limits.Initial
 open import Cubical.Categories.Functor
 open import Cubical.Categories.Presheaf.Base
 open import Cubical.Categories.Instances.Sets
@@ -1008,6 +1009,40 @@ Example of a CwF
           (funExt (λ x → refl))
           (squash₁ _ _)
 
+𝟘Assembly : {l l′ k′ : Level} ⦃ 𝕡 : PCA l ⦄ ⦃ 𝕔 : Comb {l} ⦃ 𝕡 ⦄ ⦄
+          → Assembly {l} {l′} {k′} ⦃ 𝕡 ⦄
+𝟘Assembly {l} {l′} {k′} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ =
+  asm 𝟘|X| _𝟘⊩_ 𝟘inh 𝟘setA 𝟘prop⊩
+  where
+  𝟘|X| : Type l′
+  𝟘|X| = Lift l′ ⊥
+
+  _𝟘⊩_ : |U| → 𝟘|X| → Type k′
+  _𝟘⊩_ p t = Lift k′ ⊥
+
+  𝟘inh : (x : 𝟘|X|) → Σ |U| (λ r → r 𝟘⊩ x)
+  𝟘inh ()
+
+  𝟘setA : isSet 𝟘|X|
+  𝟘setA () y
+
+  𝟘prop⊩ : (u : |U|) (x : 𝟘|X|) → isProp (u 𝟘⊩ x)
+  𝟘prop⊩ u () a b
+
+𝟘Assembly-initial : {l l′ k′ : Level} ⦃ 𝕡 : PCA l ⦄ ⦃ 𝕔 : Comb {l} ⦃ 𝕡 ⦄ ⦄
+                  → isInitial (Asm l l′ k′) 𝟘Assembly
+𝟘Assembly-initial {l} {l′} {k′} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ y =
+  m , m≡
+  where
+  m : morphism 𝟘Assembly y
+  m = morph (λ ()) ∣ Ic , (λ x b ()) ∣₁
+
+  m≡ : (n : morphism 𝟘Assembly y) → m ≡ n
+  m≡ (morph n ncond) =
+    cong₂ morph
+          (funExt (λ ()))
+          {!squash₁ _ _!}
+
 setMorph : {l : Level} (X Y : Set(l)) (xset : isSet X) (yset : isSet Y)
            (f : X → Y)
          → Category.Hom[_,_] (SET l) (X , xset) (Y , yset)
@@ -1032,7 +1067,11 @@ AsmCwF {l} {l′} {k′} {n} {{𝕡}} {{𝕔}} =
                 F-seq = λ {x} {y} {z} f g → {!!} }
 
   Tm : Presheaf (∫ᴾ Ty) n
-  Tm = {!!}
+  Tm = record { F-ob  = λ U → ∥ Σ {!(γ : Assembly.|X| Γ) → ?!} {!!} ∥₂ ,
+                              squash₂ ;
+                F-hom = {!!} ;
+                F-id  = {!!} ;
+                F-seq = {!!} }
 
 -- --}
 -- --}
