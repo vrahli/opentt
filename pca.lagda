@@ -1072,9 +1072,10 @@ AsmCwF {l} {l′} {k′} {n} {{𝕡}} {{𝕔}} =
                 F-id  = λ {x} → refl ;
                 F-seq = λ {x} {y} {z} f g → {!!} }
 
-  Tm : Presheaf (∫ᴾ Ty) n
-  Tm = record { F-ob  = λ ΓU@(Γ , U) → ∥ Σ ((γ : Assembly.|X| Γ) → {!!}) {!!} ∥₂ ,
+  Tm : Presheaf (∫ᴾ Ty) {!!}
+  Tm = record { F-ob  = λ ΓU@(Γ , U) → ∥ Σ ((γ : Assembly.|X| Γ) → {!Assembly.|X| (U γ)!}) {!!} ∥₂ ,
                                        squash₂ ;
+                                       -- This doesn't quite work because Assembly is truncated in Ty
                 F-hom = {!!} ;
                 F-id  = {!!} ;
                 F-seq = {!!} }
