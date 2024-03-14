@@ -119,15 +119,16 @@ _∘_//_ {{p}} a b h with a · b
                 K · a ≈ ka
               × ((b : |U|) → ka · b ≈ a))
       -- S · a · b · c ≡ (a · c) · (b · c)
-      S-eqn : (a b : |U|)
-            → Σ |U| (λ sa → Σ |U| (λ sab →
-              S · a ≈ sa
-            × sa · b ≈ sab
-            × ((c ac bc acbc : |U|)
-              → a · c ≈ ac
-              → b · c ≈ bc
-              → ac · bc ≈ acbc
-              → sab · c ≈ acbc)))
+      S-eqn : (a : |U|)
+            → Σ |U| (λ sa
+            → S · a ≈ sa
+              × ((b : |U|) → Σ |U| (λ sab
+              → sa · b ≈ sab
+                × ((c ac bc acbc : |U|)
+                → a · c ≈ ac
+                → b · c ≈ bc
+                → ac · bc ≈ acbc
+                → sab · c ≈ acbc))))
 
   open Comb {{...}}
 
@@ -136,10 +137,16 @@ _∘_//_ {{p}} a b h with a · b
   K· {l} {{p}} {{c}} x with K-eqn x
   ... | Kx , Kx≡ , q = Kx
 
+  -- S · a is defined
+  S· : {l : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}} → |U| → |U|
+  S· {l} {{p}} {{c}} a with S-eqn a
+  ... | Sa , Fb = Sa
+
   -- S · a · b is defined
   S·· : {l : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}} → |U| → |U| → |U|
-  S·· {l} {{p}} {{c}} a b with S-eqn a b
-  ... | Sa , Sab , Sa≡ , Sab≡ , q = Sab
+  S·· {l} {{p}} {{c}} a b with S-eqn a
+  ... | Sa , Sa≡ , Fb with Fb b
+  ... | Sab , Sab≡ , q = Sab
 
   -- I combinator: I · x ≡ x
   -- Defined as S · K · K
@@ -149,8 +156,9 @@ _∘_//_ {{p}} a b h with a · b
   Ic-eqn : {l : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}}
          → (x : |U|) → Ic {{p}} {{c}} · x ≈ x
   Ic-eqn {l} {{p}} {{c}} x
-    with S-eqn K K
-  ... | SK , SKK , SK≡ , SKK≡ , q with K-eqn x
+    with S-eqn K
+  ... | SK , SK≡ , FK with FK K
+  ... | SKK , SKK≡ , q with K-eqn x
   ... | Kx , Kx≡ , h = q x Kx Kx x Kx≡ Kx≡ (h Kx)
 
   -- Composes a and b: S · (K · a) · b
@@ -163,13 +171,38 @@ _∘_//_ {{p}} a b h with a · b
          → PCA._·_ p a y₁ ≈ y₂
          → PCA._·_ p (Cc a b) x ≈ y₂
   Cc-eqn {l} {{p}} {{c}} a b x y₁ y₂ y₁≡ y₂≡ with K-eqn a
-  ... | Ka , Ka≡ , q with S-eqn Ka b
-  ... | SKa , SKab , SKa≡ , SKab≡ , h = h x a y₁ y₂ (q x) y₁≡ y₂≡
+  ... | Ka , Ka≡ , q with S-eqn Ka
+  ... | SKa , SKa≡ , Fb with Fb b
+  ... | SKab , SKab≡ , h = h x a y₁ y₂ (q x) y₁≡ y₂≡
 
 {--  Cc-eqn : {l : Level} {{p : PCA l}} {{c : Comb {l} {k} {{p}}}} (a b : |U|)
          → (x : |U|) → Cc {{p}} {{c}} a b · x ≈ a · (b · x)
   Cc-eqn {l} {{p}} {{c}} a b x = ?
 --}
+
+  -- zero combinator, i.e., Z f x ≡ x, i.e., λ f x. x
+  Zc : {l : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}} → |U|
+  Zc {l} {{p}} {{c}} = K· Ic
+
+  -- suc combinator, i.e., S n f x ≡ f (n f x), i.e., λ n f x. f(n f x)
+  Sc : {l : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}} → |U|
+  Sc {l} {{p}} {{c}} = S· (S·· (K· S) K)
+
+  Sc· : {l : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}} → |U| → |U|
+  Sc· {l} {{p}} {{c}} a = S·· (S·· (K· S) K) a
+
+  -- number n
+  Nc : {l : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}} (n : ℕ) → |U|
+  Nc {l} ⦃ p ⦄ ⦃ c ⦄ zero = Zc
+  Nc {l} ⦃ p ⦄ ⦃ c ⦄ (suc n) = Sc· (Nc n)
+
+  data isNc {l : Level} ⦃ p : PCA l ⦄ ⦃ c : Comb {l} ⦃ p ⦄ ⦄ (n : ℕ) : |U| → Set(l) where
+    isn : isNc n (Nc n)
+
+  isNc-elim : {l : Level} ⦃ p : PCA l ⦄ ⦃ c : Comb {l} ⦃ p ⦄ ⦄ (n : ℕ)
+              (x : isNc n (Nc n))
+            → x ≡ isn
+  isNc-elim {l} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ n x = {!!}
 
 \end{code}
 
@@ -1063,25 +1096,25 @@ Discrete-Lift {l} {k} {A} d (lift x) (lift y) with d x y
 ... | yes p = yes (cong lift p)
 ... | no p = no (λ q → p (cong lower q))
 
-ℕAssembly : {l l′ k′ : Level} ⦃ 𝕡 : PCA l ⦄ ⦃ 𝕔 : Comb {l} ⦃ 𝕡 ⦄ ⦄
-          → Assembly {l} {l′} {k′} ⦃ 𝕡 ⦄
-ℕAssembly {l} {l′} {k′} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ =
+ℕAssembly : {l l′ : Level} ⦃ 𝕡 : PCA l ⦄ ⦃ 𝕔 : Comb {l} ⦃ 𝕡 ⦄ ⦄
+          → Assembly {l} {l′} {l} ⦃ 𝕡 ⦄
+ℕAssembly {l} {l′} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ =
   asm ℕ|X| _ℕ⊩_ ℕinh ℕsetA ℕprop⊩
   where
   ℕ|X| : Type l′
   ℕ|X| = Lift l′ ℕ
 
-  _ℕ⊩_ : |U| → ℕ|X| → Type k′
-  _ℕ⊩_ p (lift n) = {!!}
+  _ℕ⊩_ : |U| → ℕ|X| → Type l
+  _ℕ⊩_ p (lift n) = p ≡ Nc n --isNc n p
 
   ℕinh : (x : ℕ|X|) → Σ |U| (λ r → r ℕ⊩ x)
-  ℕinh (lift n) = {!!}
+  ℕinh (lift n) = Nc n , refl --isn
 
   ℕsetA : isSet ℕ|X|
   ℕsetA = Discrete→isSet (Discrete-Lift discreteℕ)
 
-  ℕprop⊩ : (u : |U|) (x : ℕ|X|) → isProp (u ℕ⊩ x)
-  ℕprop⊩ u x a b = {!!}
+  ℕprop⊩ : (u : |U|) (n : ℕ|X|) → isProp (u ℕ⊩ n)
+  ℕprop⊩ u (lift n) x y = set|U| u (Nc n) x y
 
 setMorph : {l : Level} (X Y : Set(l)) (xset : isSet X) (yset : isSet Y)
            (f : X → Y)
