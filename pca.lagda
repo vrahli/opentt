@@ -18,6 +18,7 @@ open import Cubical.Categories.Presheaf.Base
 open import Cubical.Categories.Instances.Sets
 -- For the category of elements:
 open import Cubical.Categories.Constructions.Elements
+open import Cubical.Categories.TypesOfCategories.TypeCategory
 
 open import Cubical.HITs.TypeQuotients renaming (rec to quot-rec ; elim to quot-elim)
 open import Cubical.HITs.SetQuotients renaming (rec to set-quot-rec ; elim to set-quot-elim)
@@ -137,10 +138,18 @@ _∘_//_ {{p}} a b h with a · b
   K· {l} {{p}} {{c}} x with K-eqn x
   ... | Kx , Kx≡ , q = Kx
 
+{--
+  -- K · x · y is defined
+  K·· : {l : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}} → |U| → |U| → |U|
+  K·· {l} {{p}} {{c}} x y with K-eqn x
+  ... | Kx , Kx≡ , q with q y
+  ... | Kxy = x
+--}
+
   -- S · a is defined
   S· : {l : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}} → |U| → |U|
   S· {l} {{p}} {{c}} a with S-eqn a
-  ... | Sa , Fb = Sa
+  ... | Sa , Sa≡ , Fb = Sa
 
   -- S · a · b is defined
   S·· : {l : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}} → |U| → |U| → |U|
@@ -153,9 +162,9 @@ _∘_//_ {{p}} a b h with a · b
   Ic : {l : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}} → |U|
   Ic {l} {{p}} {{c}} = S·· K K
 
-  Ic-eqn : {l : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}}
+  app-Ic : {l : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}}
          → (x : |U|) → Ic {{p}} {{c}} · x ≈ x
-  Ic-eqn {l} {{p}} {{c}} x
+  app-Ic {l} {{p}} {{c}} x
     with S-eqn K
   ... | SK , SK≡ , FK with FK K
   ... | SKK , SKK≡ , q with K-eqn x
@@ -196,6 +205,215 @@ _∘_//_ {{p}} a b h with a · b
   Nc {l} ⦃ p ⦄ ⦃ c ⦄ zero = Zc
   Nc {l} ⦃ p ⦄ ⦃ c ⦄ (suc n) = Sc· (Nc n)
 
+  app-K : {l : Level} ⦃ 𝕡 : PCA l ⦄ ⦃ 𝕔 : Comb {l} ⦃ 𝕡 ⦄ ⦄
+          (a : |U|)
+        → K · a ≈ K· a
+  app-K {l} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ a with K-eqn a
+  ... | Kx , Kx≡ , q = Kx≡
+
+  app-K· : {l : Level} ⦃ 𝕡 : PCA l ⦄ ⦃ 𝕔 : Comb {l} ⦃ 𝕡 ⦄ ⦄
+           (x a : |U|)
+         → (K· x) · a ≈ x
+  app-K· {l} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ x a with K-eqn x
+  ... | Kx , Kx≡ , q with q a
+  ... | Kxy = Kxy
+
+{--
+  app-K·· : {l : Level} ⦃ 𝕡 : PCA l ⦄ ⦃ 𝕔 : Comb {l} ⦃ 𝕡 ⦄ ⦄
+            (a b : |U|)
+          → K·· a b ≡ a
+  app-K·· {l} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ a b with K-eqn a
+  ... | Kx , Kx≡ , q with q b
+  ... | Kxy = refl
+--}
+
+  app-S : {l : Level} ⦃ 𝕡 : PCA l ⦄ ⦃ 𝕔 : Comb {l} ⦃ 𝕡 ⦄ ⦄
+          (a : |U|)
+        → S · a ≈ S· a
+  app-S {l} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ a with S-eqn a
+  ... | Sa , Sa≡ , Fb = Sa≡
+
+  app-S· : {l : Level} ⦃ 𝕡 : PCA l ⦄ ⦃ 𝕔 : Comb {l} ⦃ 𝕡 ⦄ ⦄
+          (a b : |U|)
+        → (S· a) · b ≈ S·· a b
+  app-S· {l} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ a b with S-eqn a
+  ... | Sa , Sa≡ , Fb with Fb b
+  ... | Sab , Sab≡ , q = Sab≡
+
+  app-S·· : {l : Level} ⦃ 𝕡 : PCA l ⦄ ⦃ 𝕔 : Comb {l} ⦃ 𝕡 ⦄ ⦄
+            (a b c ac bc acbc : |U|)
+          → a · c ≈ ac
+          → b · c ≈ bc
+          → ac · bc ≈ acbc
+          → (S·· a b) · c ≈ acbc
+  app-S·· {l} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ a b c ac bc acbc ac≡ bc≡ acbc≡ with S-eqn a
+  ... | Sa , Sa≡ , Fb with Fb b
+  ... | Sab , Sab≡ , q with q c ac bc acbc ac≡ bc≡ acbc≡
+  ... | Sabc≡ = Sabc≡
+
+  c1 : {l : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}} → |U|
+  c1 {l} {{p}} {{c}} = S·· (K· S) K
+
+  -- c1 · a is defined and is equal to S· (K· a)
+  c1· : {l : Level} ⦃ 𝕡 : PCA l ⦄ ⦃ 𝕔 : Comb {l} ⦃ 𝕡 ⦄ ⦄ → |U| → |U|
+  c1· {l} ⦃ p ⦄ ⦃ c ⦄ a = S· (K· a)
+
+  -- c1 · a · b is defined and is equal to S·· (K· a) b
+  c1·· : {l : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}} → |U| → |U| → |U|
+  c1·· {l} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ a b = S·· (K· a) b
+
+  app-c1 : {l : Level} ⦃ 𝕡 : PCA l ⦄ ⦃ 𝕔 : Comb {l} ⦃ 𝕡 ⦄ ⦄
+           (a : |U|)
+         → c1 · a ≈ c1· a
+  app-c1 {l} ⦃ p ⦄ ⦃ c ⦄ a =
+    app-S·· (K· S) K a S (K· a) (S· (K· a))
+            (app-K· S a) (app-K a)
+            (app-S (K· a))
+
+  app-c1· : {l : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}}
+            (a b : |U|)
+          → (c1· a) · b ≈ c1·· a b
+  app-c1· {l} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ a b = app-S· (K· a) b
+
+  app-c1·· : {l : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}}
+             (a b c bc abc : |U|)
+           → b · c ≈ bc
+           → a · bc ≈ abc
+           → (c1·· a b) · c ≈ abc
+  app-c1·· {l} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ a b c bc abc bc≡ abc≡ =
+    app-S·· (K· a) b c a bc abc
+            (app-K· a c)
+            bc≡ abc≡
+
+  c2 : {l : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}} → |U|
+  c2 {l} {{p}} {{c}} = S·· (c1·· S (c1·· K (c1·· S (S·· (c1·· c1 Ic) (K· Ic))))) (K· (c1·· K Ic))
+
+  c2· : {l : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}} → |U| → |U|
+  c2· {l} {{p}} {{c}} a = S·· (K· (S· (c1·· a Ic))) (c1·· K Ic)
+
+  c2·· : {l : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}} → |U| → |U| → |U|
+  c2·· {l} {{p}} {{c}} a b = S·· (c1·· a Ic) (K· b)
+
+  app-c2 : {l : Level} ⦃ 𝕡 : PCA l ⦄ ⦃ 𝕔 : Comb {l} ⦃ 𝕡 ⦄ ⦄
+           (a : |U|)
+         → c2 · a ≈ c2· a
+  app-c2 {l} ⦃ p ⦄ ⦃ c ⦄ a =
+    app-S··
+      (c1·· S (c1·· K (c1·· S (S·· (c1·· c1 Ic) (K· Ic)))))
+      (K· (c1·· K Ic))
+      a
+      (S· (K· (S· (c1·· a Ic))))
+      (c1·· K Ic)
+      (c2· a)
+      (app-c1·· S (c1·· K (c1·· S (S·· (c1·· c1 Ic) (K· Ic)))) a
+        (K· (S· (c1·· a Ic)))
+        (S· (K· (S· (c1·· a Ic))))
+        (app-c1·· K (c1·· S (S·· (c1·· c1 Ic) (K· Ic))) a
+          (S· (c1·· a Ic)) (K· (S· (c1·· a Ic)))
+          (app-c1·· S (S·· (c1·· c1 Ic) (K· Ic)) a
+            (c1·· a Ic) (S· (c1·· a Ic))
+            (app-S·· (c1·· c1 Ic) (K· Ic) a (c1· a) Ic (c1·· a Ic)
+              (app-c1·· c1 Ic a a (c1· a) (app-Ic a) (app-c1 a))
+              (app-K· Ic a) (app-c1· a Ic))
+            (app-S (c1·· a Ic)))
+          (app-K (S· (c1·· a Ic))))
+        (app-S (K· (S· (c1·· a Ic)))))
+      (app-K· (c1·· (Comb.K c) Ic) a)
+      (app-S· (K· (S· (c1·· a Ic))) (c1·· (Comb.K c) Ic))
+
+  app-c2· : {l : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}}
+            (a b : |U|)
+          → (c2· a) · b ≈ c2·· a b
+  app-c2· {l} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ a b =
+    app-S·· (K· (S· (c1·· a Ic))) (c1·· K Ic) b
+      (S· (c1·· a Ic))
+      (K· b)
+      (c2·· a b)
+      (app-K· (S· (c1·· a Ic)) b)
+      (app-c1·· K Ic b b (K· b) (app-Ic b) (app-K b))
+      (app-S· (c1·· a Ic) (K· b))
+
+  app-c2·· : {l : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}}
+             (a b c ac acb : |U|)
+           → a · c ≈ ac
+           → ac · b ≈ acb
+           → (c2·· a b) · c ≈ acb
+  app-c2·· {l} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ a b c ac acb ac≡ acb≡ =
+    app-S·· (c1·· a Ic) (K· b) c ac b acb
+      (app-c1·· a Ic c c ac (app-Ic c) ac≡)
+      (app-K· b c)
+      acb≡
+
+  -- Pairing opertor, i.e., λ x y c. c x y
+  -- Following https://web.stanford.edu/class/cs242/materials/lectures/lecture02.pdf
+  Pc : {l : Level} ⦃ 𝕡 : PCA l ⦄ ⦃ c : Comb {l} ⦃ 𝕡 ⦄ ⦄ → |U|
+  Pc {l} ⦃ 𝕡 ⦄ ⦃ c ⦄ = c2·· (c1·· c1 (c1·· c2 (c1·· (c2· Ic) Ic))) Ic
+
+  Pc· : {l : Level} ⦃ 𝕡 : PCA l ⦄ ⦃ c : Comb {l} ⦃ 𝕡 ⦄ ⦄ → |U| → |U|
+  Pc· {l} ⦃ 𝕡 ⦄ ⦃ c ⦄ a = c1·· (c2· (c2·· Ic a)) Ic
+
+  Pc·· : {l : Level} ⦃ 𝕡 : PCA l ⦄ ⦃ c : Comb {l} ⦃ 𝕡 ⦄ ⦄ → |U| → |U| → |U|
+  Pc·· {l} ⦃ 𝕡 ⦄ ⦃ c ⦄ a b = c2·· (c2·· Ic a) b
+
+  app-Pc : {l : Level} ⦃ 𝕡 : PCA l ⦄ ⦃ c : Comb {l} ⦃ 𝕡 ⦄ ⦄
+           (a : |U|)
+         → Pc · a ≈ Pc· a
+  app-Pc {l} ⦃ 𝕡 ⦄ ⦃ c ⦄ a =
+    app-c2·· (c1·· c1 (c1·· c2 (c1·· (c2· Ic) Ic))) Ic a
+      (c1· (c2· (c2·· Ic a))) (Pc· a)
+      (app-c1·· c1 (c1·· c2 (c1·· (c2· Ic) Ic)) a
+        (c2· (c2·· Ic a))
+        (c1· (c2· (c2·· Ic a)))
+        (app-c1·· c2 (c1·· (c2· Ic) Ic) a (c2·· Ic a) (c2· (c2·· Ic a))
+          (app-c1·· (c2· Ic) Ic a a (c2·· Ic a) (app-Ic a) (app-c2· Ic a))
+          (app-c2 (c2·· Ic a)))
+        (app-c1 (c2· (c2·· Ic a))))
+      (app-c1· (c2· (c2·· Ic a)) Ic)
+
+  app-Pc· : {l : Level} ⦃ 𝕡 : PCA l ⦄ ⦃ c : Comb {l} ⦃ 𝕡 ⦄ ⦄
+            (a b : |U|)
+           → (Pc· a) · b ≈ Pc·· a b
+  app-Pc· {l} ⦃ 𝕡 ⦄ ⦃ c ⦄ a b =
+    app-c1·· (c2· (c2·· Ic a)) Ic b b (Pc·· a b)
+      (app-Ic b) (app-c2· (c2·· Ic a) b)
+
+  app-Pc·· : {l : Level} ⦃ 𝕡 : PCA l ⦄ ⦃ 𝕔 : Comb {l} ⦃ 𝕡 ⦄ ⦄
+             (a b c ca cab : |U|)
+           → c · a ≈ ca
+           → ca · b ≈ cab
+           → (Pc·· a b) · c ≈ cab
+  app-Pc·· {l} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ a b c ca cab ca≡ cab≡ =
+    app-c2·· (c2·· Ic a) b c ca cab
+      (app-c2·· Ic a c c ca (app-Ic c) ca≡)
+      cab≡
+
+  -- 1st projection of a pair
+  π₁c : {l : Level} ⦃ 𝕡 : PCA l ⦄ ⦃ c : Comb {l} ⦃ 𝕡 ⦄ ⦄ → |U|
+  π₁c {l} ⦃ 𝕡 ⦄ ⦃ c ⦄ = S·· Ic (K· K)
+
+  π₁c-pair : {l : Level} ⦃ 𝕡 : PCA l ⦄ ⦃ c : Comb {l} ⦃ 𝕡 ⦄ ⦄
+           → (a b : |U|)
+           → π₁c · (Pc·· a b) ≈ a
+  π₁c-pair {l} ⦃ 𝕡 ⦄ ⦃ c ⦄ a b =
+    app-S·· Ic (K· K) (Pc·· a b) (Pc·· a b) K a
+      (app-Ic (Pc·· a b))
+      (app-K· K (Pc·· a b))
+      (app-Pc·· a b K (K· a) a (app-K a) (app-K· a b))
+
+  -- 2nd projection of a pair
+  π₂c : {l : Level} ⦃ 𝕡 : PCA l ⦄ ⦃ c : Comb {l} ⦃ 𝕡 ⦄ ⦄ → |U|
+  π₂c {l} ⦃ 𝕡 ⦄ ⦃ c ⦄ = S·· Ic (K· (K· Ic))
+
+  π₂c-pair : {l : Level} ⦃ 𝕡 : PCA l ⦄ ⦃ c : Comb {l} ⦃ 𝕡 ⦄ ⦄
+           → (a b : |U|)
+           → π₂c · (Pc·· a b) ≈ b
+  π₂c-pair {l} ⦃ 𝕡 ⦄ ⦃ c ⦄ a b =
+    app-S·· Ic (K· (K· Ic)) (Pc·· a b) (Pc·· a b) (K· Ic) b
+      (app-Ic (Pc·· a b))
+      (app-K· (K· Ic) (Pc·· a b))
+      (app-Pc·· a b (K· Ic) Ic b (app-K· Ic a) (app-Ic b))
+
+{--
   data isNc {l : Level} ⦃ p : PCA l ⦄ ⦃ c : Comb {l} ⦃ p ⦄ ⦄ (n : ℕ) : |U| → Set(l) where
     isn : isNc n (Nc n)
 
@@ -203,6 +421,7 @@ _∘_//_ {{p}} a b h with a · b
               (x : isNc n (Nc n))
             → x ≡ isn
   isNc-elim {l} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ n x = {!!}
+--}
 
 \end{code}
 
@@ -762,7 +981,7 @@ morphism-comp {l} {l′} {k′} {{p}} {{c}} {x} {y} {z} (morph f₁ cond₁) (mo
   cond′ : (x : Assembly.|X| X) (b : PCA.|U| p)
         → Assembly._⊩_ X b x
         → Σ (PCA.|U| p) (λ c₁ → (p PCA.· Ic) b ≈ c₁ × Assembly._⊩_ X c₁ x)
-  cond′ x b b⊩x = b , Ic-eqn b , b⊩x
+  cond′ x b b⊩x = b , app-Ic b , b⊩x
 
 Asm-id : {l l′ k′ : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}}
          {X : Assembly {l} {l′} {k′} {{p}}}
@@ -1035,7 +1254,7 @@ Example of a CwF
   m , m≡
   where
   m : morphism y 𝟙Assembly
-  m = morph (λ _ → lift tt) ∣ Ic , (λ x b b⊩x → b , Ic-eqn b , lift tt) ∣₁
+  m = morph (λ _ → lift tt) ∣ Ic , (λ x b b⊩x → b , app-Ic b , lift tt) ∣₁
 
   m≡ : (n : morphism y 𝟙Assembly) → m ≡ n
   m≡ (morph n ncond) =
@@ -1151,11 +1370,51 @@ AsmCwF {l} {l′} {k′} {n} {{𝕡}} {{𝕔}} =
 
   Tm : Presheaf (∫ᴾ Ty) {!!}
   Tm = record { F-ob  = λ ΓU@(Γ , U) → ∥ Σ ((γ : Assembly.|X| Γ) → {!Assembly.|X| (U γ)!}) {!!} ∥₂ ,
-                                       squash₂ ; -- rec∥₂ {!!} {!!} {!!}
+                                       squash₂ ; --rec∥₂ {!!} {!!} {!!} ;
+                                       -- ∥ Σ ((γ : Assembly.|X| Γ) → {!Assembly.|X| (U γ)!}) {!!} ∥₂ ,
+                                       -- squash₂ ; -- rec∥₂ {!!} {!!} {!!}
                                        -- This doesn't quite work because Assembly is truncated in Ty
                 F-hom = {!!} ;
                 F-id  = {!!} ;
                 F-seq = {!!} }
+
+CExt : {l l′ k′ : Level}
+       ⦃ 𝕡 : PCA l ⦄
+       ⦃ 𝕔 : Comb {l} ⦃ 𝕡 ⦄ ⦄
+       (Γ : Assembly {l} {l′} {k′} ⦃ 𝕡 ⦄)
+       (U : Assembly.|X| Γ → Assembly {l} {l′} {k′} ⦃ 𝕡 ⦄)
+     → Assembly {l} {l′} {k′} ⦃ 𝕡 ⦄
+CExt {l} {l′} {k′} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ Γ U =
+  asm C|X| _C⊩_ Cinh Cset| Cprop⊩
+  where
+  C|X| : Set(l′)
+  C|X| = Σ (Assembly.|X| Γ) (λ γ → Assembly.|X| (U γ))
+
+  _C⊩_ : |U| → C|X| → Set(k′)
+  _C⊩_ p (γ , t) = {!!}
+
+  Cinh : (x : C|X|) → Σ |U| (λ r → r C⊩ x)
+  Cinh x = {!!}
+
+  Cset| : isSet C|X|
+  Cset| = isSetΣ (Assembly.set| Γ) (λ γ → Assembly.set| (U γ))
+
+  Cprop⊩ : (u : |U|) (x : C|X|) → isProp (u C⊩ x)
+  Cprop⊩ u x = {!!}
+
+AsmType : {l l′ k′ : Level}
+          ⦃ 𝕡 : PCA l ⦄
+          ⦃ 𝕔 : Comb {l} ⦃ 𝕡 ⦄ ⦄
+        → isTypeCategory {lsuc l ⊔ lsuc l′ ⊔ lsuc k′} {l ⊔ l′ ⊔ k′} {lsuc l ⊔ lsuc l′ ⊔ lsuc k′} (Asm l l′ k′ ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄)
+AsmType {l} {l′} {k′} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ =
+  record
+   { Ty[_]   = λ Γ → Assembly.|X| Γ → Assembly {l} {l′} {k′} ⦃ 𝕡 ⦄
+   ; cext    = λ Γ U → {!!}
+   ; reindex = {!!}
+   ; q⟨_,_⟩  = {!!}
+   ; sq      = {!!}
+   ; isPB    = {!!}
+   }
 
 
 \end{code}
