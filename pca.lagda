@@ -1381,8 +1381,8 @@ AsmCwF {l} {l′} {k′} {n} {{𝕡}} {{𝕔}} =
 CExt : {l l′ k′ : Level}
        ⦃ 𝕡 : PCA l ⦄
        ⦃ 𝕔 : Comb {l} ⦃ 𝕡 ⦄ ⦄
-       (Γ : Assembly {l} {l′} {k′} ⦃ 𝕡 ⦄)
-       (U : Assembly.|X| Γ → Assembly {l} {l′} {k′} ⦃ 𝕡 ⦄)
+       (Γ : Assembly {l} {l′} {l ⊔ k′} ⦃ 𝕡 ⦄)
+       (U : Assembly.|X| Γ → Assembly {l} {l′} {l ⊔ k′} ⦃ 𝕡 ⦄)
      → Assembly {l} {l′} {l ⊔ k′} ⦃ 𝕡 ⦄
 CExt {l} {l′} {k′} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ Γ U =
   asm C|X| _C⊩_ Cinh Cset| Cprop⊩
@@ -1392,36 +1392,46 @@ CExt {l} {l′} {k′} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ Γ U =
 
   _C⊩_ : |U| → C|X| → Set(l ⊔ k′)
   _C⊩_ p (γ , t) =
-    Σ |U| (λ a → Σ |U| (λ b
-    → π₁ · p ≈ a
-    × π₂ · p ≈ b
-    × Assembly._⊩_ Γ a γ
-    × Assembly._⊩_ (U γ) b t))
+    ∥ Σ |U| (λ a → Σ |U| (λ b
+      → π₁ · p ≈ a
+      × π₂ · p ≈ b
+      × Assembly._⊩_ Γ a γ
+      × Assembly._⊩_ (U γ) b t)) ∥₁
 
   Cinh : (x : C|X|) → Σ |U| (λ r → r C⊩ x)
   Cinh (γ , t) =
     Pc·· (fst (Assembly.inh Γ γ)) (fst (Assembly.inh (U γ) t)) ,
-    fst (Assembly.inh Γ γ) ,
-    fst (Assembly.inh (U γ) t) ,
-    π₁-pair (fst (Assembly.inh Γ γ)) (fst (Assembly.inh (U γ) t)) ,
-    π₂-pair (fst (Assembly.inh Γ γ)) (fst (Assembly.inh (U γ) t)) ,
-    snd (Assembly.inh Γ γ) ,
-    snd (Assembly.inh (U γ) t)
+    ∣ fst (Assembly.inh Γ γ) ,
+      fst (Assembly.inh (U γ) t) ,
+      π₁-pair (fst (Assembly.inh Γ γ)) (fst (Assembly.inh (U γ) t)) ,
+      π₂-pair (fst (Assembly.inh Γ γ)) (fst (Assembly.inh (U γ) t)) ,
+      snd (Assembly.inh Γ γ) ,
+      snd (Assembly.inh (U γ) t) ∣₁
 
   Cset| : isSet C|X|
   Cset| = isSetΣ (Assembly.set| Γ) (λ γ → Assembly.set| (U γ))
 
   Cprop⊩ : (u : |U|) (x : C|X|) → isProp (u C⊩ x)
-  Cprop⊩ u x = {!Σ in C⊩ needs to be truncated!}
+  Cprop⊩ u x = squash₁
+
+CExt-restriction : {l l′ k′ : Level}
+                   ⦃ 𝕡 : PCA l ⦄
+                   ⦃ 𝕔 : Comb {l} ⦃ 𝕡 ⦄ ⦄
+                   (Γ : Assembly {l} {l′} {l ⊔ k′} ⦃ 𝕡 ⦄)
+                   (U : Assembly.|X| Γ → Assembly {l} {l′} {l ⊔ k′} ⦃ 𝕡 ⦄)
+                 → morphism (CExt Γ U) Γ
+CExt-restriction {l} {l′} {k′} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ Γ U =
+  morph fst ∣ π₁ , (λ x@(γ , t) b b⊩x → {!!}) ∣₁
 
 AsmType : {l l′ k′ : Level}
           ⦃ 𝕡 : PCA l ⦄
           ⦃ 𝕔 : Comb {l} ⦃ 𝕡 ⦄ ⦄
-        → isTypeCategory {lsuc l ⊔ lsuc l′ ⊔ lsuc k′} {l ⊔ l′ ⊔ k′} {lsuc l ⊔ lsuc l′ ⊔ lsuc k′} (Asm l l′ k′ ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄)
+        → isTypeCategory {lsuc l ⊔ lsuc l′ ⊔ lsuc k′} {l ⊔ l′ ⊔ k′} {lsuc l ⊔ lsuc l′ ⊔ lsuc k′}
+                         (Asm l l′ (l ⊔ k′) ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄)
 AsmType {l} {l′} {k′} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ =
   record
-   { Ty[_]   = λ Γ → Assembly.|X| Γ → Assembly {l} {l′} {k′} ⦃ 𝕡 ⦄
-   ; cext    = λ Γ U → {!CExt Γ U!} , {!!}
+   { Ty[_]   = λ Γ → Assembly.|X| Γ → Assembly {l} {l′} {l ⊔ k′} ⦃ 𝕡 ⦄
+   ; cext    = λ Γ U → CExt Γ U , {!!}
    ; reindex = {!!}
    ; q⟨_,_⟩  = {!!}
    ; sq      = {!!}
