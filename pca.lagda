@@ -23,7 +23,8 @@ open import Cubical.Categories.TypesOfCategories.TypeCategory
 open import Cubical.HITs.TypeQuotients renaming (rec to quot-rec ; elim to quot-elim)
 open import Cubical.HITs.SetQuotients renaming (rec to set-quot-rec ; elim to set-quot-elim)
 open import Cubical.HITs.PropositionalTruncation
-  using (map ; map2 ; ∥_∥₁ ; ∣_∣₁ ; squash₁)
+  using (map2 ; ∥_∥₁ ; ∣_∣₁ ; squash₁)
+  renaming (map to map-prop-trunc ; rec to rec-prop-trunc)
 open import Cubical.HITs.SetTruncation
   using (∥_∥₂ ; ∣_∣₂ ; squash₂)
   renaming (rec to rec∥₂)
@@ -932,7 +933,7 @@ morphismCond {l} {l′} {k′} {{p}} X Y f =
   Σ |U| (λ a
   → (x : Assembly.|X| X) (b : |U|)
   → Assembly._⊩_ X b x
-  → Σ |U| (λ c → a · b ≈ c × Assembly._⊩_ Y c (f x)))
+  → ∥ Σ |U| (λ c → Σ (a · b ≈ c) λ _ → Assembly._⊩_ Y c (f x)) ∥₁ )
 
 ∥morphismCond∥ : {l l′ k′ : Level} {{p : PCA l}} (X Y : Assembly {l} {l′} {k′} {{p}})
                  (f : Assembly.|X| X → Assembly.|X| Y)
@@ -960,12 +961,17 @@ record morphism {l l′ k′ : Level} {{p : PCA l}} (X Y : Assembly {l} {l′} {
   cond′ : morphismCond x y f₁ → morphismCond y z f₂ → morphismCond x z (λ u → f₂ (f₁ u))
   cond′ (a₁ , cd₁) (a₂ , cd₂) = Cc a₂ a₁ , cond″
     where
-    cond″ : (u : Assembly.|X| x) (b : PCA.|U| p)
+    cond″ : (u : Assembly.|X| x) (b : |U|)
           → Assembly._⊩_ x b u
-          → Σ (PCA.|U| p) (λ c₁ → PCA._·_ p (Cc a₂ a₁) b ≈ c₁ × Assembly._⊩_ z c₁ (f₂ (f₁ u)))
-    cond″ u b b⊩u with cd₁ u b b⊩u
-    ... | c₁ , c₁≡ , ⊩c₁ with cd₂ (f₁ u) c₁ ⊩c₁
-    ... | c₂ , c₂≡ , ⊩c₂ = c₂ , Cc-eqn a₂ a₁ b c₁ c₂ c₁≡ c₂≡ , ⊩c₂
+          → ∥ Σ |U| (λ c₁ → Σ ((Cc a₂ a₁) · b ≈ c₁) λ _ → Assembly._⊩_ z c₁ (f₂ (f₁ u))) ∥₁
+    cond″ u b b⊩u =
+      rec-prop-trunc
+        squash₁
+        (λ (c₁ , c₁≡ , ⊩c₁) →
+          map-prop-trunc
+            (λ (c₂ , c₂≡ , ⊩c₂) → c₂ , Cc-eqn a₂ a₁ b c₁ c₂ c₁≡ c₂≡ , ⊩c₂)
+            (cd₂ (f₁ u) c₁ ⊩c₁))
+        (cd₁ u b b⊩u)
 
 morphism-comp : {l l′ k′ : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}}
                 {x y z : Assembly {l} {l′} {k′} {{p}}}
@@ -978,10 +984,10 @@ morphism-comp {l} {l′} {k′} {{p}} {{c}} {x} {y} {z} (morph f₁ cond₁) (mo
                   → ∥morphismCond∥ X X (λ x → x)
 ∥morphismCond∥-id {{p}} {{c}} {X} = ∣ Ic , cond′ ∣₁
   where
-  cond′ : (x : Assembly.|X| X) (b : PCA.|U| p)
+  cond′ : (x : Assembly.|X| X) (b : |U|)
         → Assembly._⊩_ X b x
-        → Σ (PCA.|U| p) (λ c₁ → (p PCA.· Ic) b ≈ c₁ × Assembly._⊩_ X c₁ x)
-  cond′ x b b⊩x = b , app-Ic b , b⊩x
+        → ∥ Σ |U| (λ c₁ → Σ (Ic · b ≈ c₁) λ _ → Assembly._⊩_ X c₁ x) ∥₁
+  cond′ x b b⊩x = ∣ b , app-Ic b , b⊩x ∣₁
 
 Asm-id : {l l′ k′ : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}}
          {X : Assembly {l} {l′} {k′} {{p}}}
@@ -1254,7 +1260,7 @@ Example of a CwF
   m , m≡
   where
   m : morphism y 𝟙Assembly
-  m = morph (λ _ → lift tt) ∣ Ic , (λ x b b⊩x → b , app-Ic b , lift tt) ∣₁
+  m = morph (λ _ → lift tt) ∣ Ic , (λ x b b⊩x → ∣ b , app-Ic b , lift tt ∣₁ ) ∣₁
 
   m≡ : (n : morphism y 𝟙Assembly) → m ≡ n
   m≡ (morph n ncond) =
@@ -1421,7 +1427,7 @@ CExt-restriction : {l l′ k′ : Level}
                    (U : Assembly.|X| Γ → Assembly {l} {l′} {l ⊔ k′} ⦃ 𝕡 ⦄)
                  → morphism (CExt Γ U) Γ
 CExt-restriction {l} {l′} {k′} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ Γ U =
-  morph fst ∣ π₁ , (λ x@(γ , t) b b⊩x → {!!}) ∣₁
+  morph fst ∣ π₁ , (λ x@(γ , t) b b⊩x → map-prop-trunc {!λ (a , b , a≡ , b≡ , ⊩a , ⊩b) → ?!} b⊩x) ∣₁
 
 AsmType : {l l′ k′ : Level}
           ⦃ 𝕡 : PCA l ⦄
@@ -1431,7 +1437,7 @@ AsmType : {l l′ k′ : Level}
 AsmType {l} {l′} {k′} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ =
   record
    { Ty[_]   = λ Γ → Assembly.|X| Γ → Assembly {l} {l′} {l ⊔ k′} ⦃ 𝕡 ⦄
-   ; cext    = λ Γ U → CExt Γ U , {!!}
+   ; cext    = λ Γ U → CExt Γ U , CExt-restriction Γ U
    ; reindex = {!!}
    ; q⟨_,_⟩  = {!!}
    ; sq      = {!!}
