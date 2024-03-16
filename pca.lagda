@@ -388,26 +388,26 @@ _∘_//_ {{p}} a b h with a · b
       cab≡
 
   -- 1st projection of a pair
-  π₁c : {l : Level} ⦃ 𝕡 : PCA l ⦄ ⦃ c : Comb {l} ⦃ 𝕡 ⦄ ⦄ → |U|
-  π₁c {l} ⦃ 𝕡 ⦄ ⦃ c ⦄ = S·· Ic (K· K)
+  π₁ : {l : Level} ⦃ 𝕡 : PCA l ⦄ ⦃ c : Comb {l} ⦃ 𝕡 ⦄ ⦄ → |U|
+  π₁ {l} ⦃ 𝕡 ⦄ ⦃ c ⦄ = S·· Ic (K· K)
 
-  π₁c-pair : {l : Level} ⦃ 𝕡 : PCA l ⦄ ⦃ c : Comb {l} ⦃ 𝕡 ⦄ ⦄
-           → (a b : |U|)
-           → π₁c · (Pc·· a b) ≈ a
-  π₁c-pair {l} ⦃ 𝕡 ⦄ ⦃ c ⦄ a b =
+  π₁-pair : {l : Level} ⦃ 𝕡 : PCA l ⦄ ⦃ c : Comb {l} ⦃ 𝕡 ⦄ ⦄
+          → (a b : |U|)
+          → π₁ · (Pc·· a b) ≈ a
+  π₁-pair {l} ⦃ 𝕡 ⦄ ⦃ c ⦄ a b =
     app-S·· Ic (K· K) (Pc·· a b) (Pc·· a b) K a
       (app-Ic (Pc·· a b))
       (app-K· K (Pc·· a b))
       (app-Pc·· a b K (K· a) a (app-K a) (app-K· a b))
 
   -- 2nd projection of a pair
-  π₂c : {l : Level} ⦃ 𝕡 : PCA l ⦄ ⦃ c : Comb {l} ⦃ 𝕡 ⦄ ⦄ → |U|
-  π₂c {l} ⦃ 𝕡 ⦄ ⦃ c ⦄ = S·· Ic (K· (K· Ic))
+  π₂ : {l : Level} ⦃ 𝕡 : PCA l ⦄ ⦃ c : Comb {l} ⦃ 𝕡 ⦄ ⦄ → |U|
+  π₂ {l} ⦃ 𝕡 ⦄ ⦃ c ⦄ = S·· Ic (K· (K· Ic))
 
-  π₂c-pair : {l : Level} ⦃ 𝕡 : PCA l ⦄ ⦃ c : Comb {l} ⦃ 𝕡 ⦄ ⦄
-           → (a b : |U|)
-           → π₂c · (Pc·· a b) ≈ b
-  π₂c-pair {l} ⦃ 𝕡 ⦄ ⦃ c ⦄ a b =
+  π₂-pair : {l : Level} ⦃ 𝕡 : PCA l ⦄ ⦃ c : Comb {l} ⦃ 𝕡 ⦄ ⦄
+          → (a b : |U|)
+          → π₂ · (Pc·· a b) ≈ b
+  π₂-pair {l} ⦃ 𝕡 ⦄ ⦃ c ⦄ a b =
     app-S·· Ic (K· (K· Ic)) (Pc·· a b) (Pc·· a b) (K· Ic) b
       (app-Ic (Pc·· a b))
       (app-K· (K· Ic) (Pc·· a b))
@@ -1383,24 +1383,36 @@ CExt : {l l′ k′ : Level}
        ⦃ 𝕔 : Comb {l} ⦃ 𝕡 ⦄ ⦄
        (Γ : Assembly {l} {l′} {k′} ⦃ 𝕡 ⦄)
        (U : Assembly.|X| Γ → Assembly {l} {l′} {k′} ⦃ 𝕡 ⦄)
-     → Assembly {l} {l′} {k′} ⦃ 𝕡 ⦄
+     → Assembly {l} {l′} {l ⊔ k′} ⦃ 𝕡 ⦄
 CExt {l} {l′} {k′} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ Γ U =
   asm C|X| _C⊩_ Cinh Cset| Cprop⊩
   where
   C|X| : Set(l′)
   C|X| = Σ (Assembly.|X| Γ) (λ γ → Assembly.|X| (U γ))
 
-  _C⊩_ : |U| → C|X| → Set(k′)
-  _C⊩_ p (γ , t) = {!!}
+  _C⊩_ : |U| → C|X| → Set(l ⊔ k′)
+  _C⊩_ p (γ , t) =
+    Σ |U| (λ a → Σ |U| (λ b
+    → π₁ · p ≈ a
+    × π₂ · p ≈ b
+    × Assembly._⊩_ Γ a γ
+    × Assembly._⊩_ (U γ) b t))
 
   Cinh : (x : C|X|) → Σ |U| (λ r → r C⊩ x)
-  Cinh x = {!!}
+  Cinh (γ , t) =
+    Pc·· (fst (Assembly.inh Γ γ)) (fst (Assembly.inh (U γ) t)) ,
+    fst (Assembly.inh Γ γ) ,
+    fst (Assembly.inh (U γ) t) ,
+    π₁-pair (fst (Assembly.inh Γ γ)) (fst (Assembly.inh (U γ) t)) ,
+    π₂-pair (fst (Assembly.inh Γ γ)) (fst (Assembly.inh (U γ) t)) ,
+    snd (Assembly.inh Γ γ) ,
+    snd (Assembly.inh (U γ) t)
 
   Cset| : isSet C|X|
   Cset| = isSetΣ (Assembly.set| Γ) (λ γ → Assembly.set| (U γ))
 
   Cprop⊩ : (u : |U|) (x : C|X|) → isProp (u C⊩ x)
-  Cprop⊩ u x = {!!}
+  Cprop⊩ u x = {!Σ in C⊩ needs to be truncated!}
 
 AsmType : {l l′ k′ : Level}
           ⦃ 𝕡 : PCA l ⦄
@@ -1409,7 +1421,7 @@ AsmType : {l l′ k′ : Level}
 AsmType {l} {l′} {k′} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ =
   record
    { Ty[_]   = λ Γ → Assembly.|X| Γ → Assembly {l} {l′} {k′} ⦃ 𝕡 ⦄
-   ; cext    = λ Γ U → {!!}
+   ; cext    = λ Γ U → {!CExt Γ U!} , {!!}
    ; reindex = {!!}
    ; q⟨_,_⟩  = {!!}
    ; sq      = {!!}
