@@ -1398,11 +1398,12 @@ CExt {l} {l′} {k′} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ Γ U =
 
   _C⊩_ : |U| → C|X| → Set(l ⊔ k′)
   _C⊩_ p (γ , t) =
-    ∥ Σ |U| (λ a → Σ |U| (λ b
-      → π₁ · p ≈ a
-      × π₂ · p ≈ b
-      × Assembly._⊩_ Γ a γ
-      × Assembly._⊩_ (U γ) b t)) ∥₁
+    ∥ Σ |U| (λ a →
+      Σ |U| (λ b →
+      Σ (π₁ · p ≈ a) (λ a≡ →
+      Σ (π₂ · p ≈ b) (λ b≡ →
+      Σ (Assembly._⊩_ Γ a γ) (λ ⊩a →
+      Assembly._⊩_ (U γ) b t))))) ∥₁
 
   Cinh : (x : C|X|) → Σ |U| (λ r → r C⊩ x)
   Cinh (γ , t) =
@@ -1427,7 +1428,7 @@ CExt-restriction : {l l′ k′ : Level}
                    (U : Assembly.|X| Γ → Assembly {l} {l′} {l ⊔ k′} ⦃ 𝕡 ⦄)
                  → morphism (CExt Γ U) Γ
 CExt-restriction {l} {l′} {k′} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ Γ U =
-  morph fst ∣ π₁ , (λ x@(γ , t) b b⊩x → map-prop-trunc {!λ (a , b , a≡ , b≡ , ⊩a , ⊩b) → ?!} b⊩x) ∣₁
+  morph fst ∣ π₁ , (λ x@(γ , t) b b⊩x → map-prop-trunc (λ (a , b , a≡ , b≡ , ⊩a , ⊩b) → a , a≡ , ⊩a) b⊩x) ∣₁
 
 AsmType : {l l′ k′ : Level}
           ⦃ 𝕡 : PCA l ⦄
