@@ -1426,9 +1426,56 @@ CExt-restriction : {l l′ k′ : Level}
                    ⦃ 𝕔 : Comb {l} ⦃ 𝕡 ⦄ ⦄
                    (Γ : Assembly {l} {l′} {l ⊔ k′} ⦃ 𝕡 ⦄)
                    (U : Assembly.|X| Γ → Assembly {l} {l′} {l ⊔ k′} ⦃ 𝕡 ⦄)
-                 → morphism (CExt Γ U) Γ
+                 → morphism (CExt {l} {l′} {k′} Γ U) Γ
 CExt-restriction {l} {l′} {k′} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ Γ U =
   morph fst ∣ π₁ , (λ x@(γ , t) b b⊩x → map-prop-trunc (λ (a , b , a≡ , b≡ , ⊩a , ⊩b) → a , a≡ , ⊩a) b⊩x) ∣₁
+
+Creindex : {l l′ k′ : Level}
+           ⦃ 𝕡 : PCA l ⦄
+           ⦃ 𝕔 : Comb {l} ⦃ 𝕡 ⦄ ⦄
+           (Γ Δ : Assembly {l} {l′} {l ⊔ k′} ⦃ 𝕡 ⦄)
+           (m : morphism {l} {l′} {l ⊔ k′} ⦃ 𝕡 ⦄ Δ Γ)
+           (U : Assembly.|X| Γ → Assembly {l} {l′} {l ⊔ k′} ⦃ 𝕡 ⦄)
+         → Assembly.|X| Δ → Assembly {l} {l′} {l ⊔ k′} ⦃ 𝕡 ⦄
+Creindex {l} {l′} {k′} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ Γ Δ m U δ = U (morphism.f m δ)
+
+Cq : {l l′ k′ : Level}
+     ⦃ 𝕡 : PCA l ⦄
+     ⦃ 𝕔 : Comb {l} ⦃ 𝕡 ⦄ ⦄
+     (Γ Δ : Assembly {l} {l′} {l ⊔ k′} ⦃ 𝕡 ⦄)
+     (f : morphism {l} {l′} {l ⊔ k′} ⦃ 𝕡 ⦄ Δ Γ)
+     (A : Assembly.|X| Γ → Assembly {l} {l′} {l ⊔ k′} ⦃ 𝕡 ⦄)
+   → morphism {l} {l′} {l ⊔ k′} ⦃ 𝕡 ⦄ (CExt {l} {l′} {k′} Δ (Creindex {l} {l′} {k′} Γ Δ f A))
+                                      (CExt {l} {l′} {k′} Γ A)
+Cq {l} {l′} {k′} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ Γ Δ (morph f cond) A =
+  morph f′ cond′
+  where
+  f′ : Assembly.|X| (CExt {l} {l′} {k′} Δ (Creindex {l} {l′} {k′} Γ Δ (morph f cond) A))
+     → Assembly.|X| (CExt {l} {l′} {k′} Γ A)
+  f′ (δ , u) = f δ , u
+
+  cond₀ : morphismCond Δ Γ f
+        → morphismCond (CExt {l} {l′} {k′} Δ (Creindex {l} {l′} {k′} Γ Δ (morph f cond) A))
+                       (CExt {l} {l′} {k′} Γ A)
+                       f′
+  cond₀ (a , c) =
+    {!!} , -- λ b → ⟨ a (π₁ b) , π₂ b ⟩ -- how do we know that (π₁ b), for example, is defined?
+    λ x@(δ , u) b b⊩x →
+      rec-prop-trunc
+        squash₁
+        (λ b⊩x₁@(a₁ , b₁ , a≡ , b≡ , ⊩a , ⊩b) →
+          map-prop-trunc
+            (λ (c₁ , c₁≡ , ⊩c₁) →
+              Pc·· c₁ b₁  ,
+              {!!} ,
+              ∣ c₁ , b₁ , π₁-pair c₁ b₁ , π₂-pair c₁ b₁ , ⊩c₁ , ⊩b ∣₁)
+            (c δ a₁ ⊩a))
+        b⊩x
+
+  cond′ : ∥morphismCond∥ (CExt {l} {l′} {k′} Δ (Creindex {l} {l′} {k′} Γ Δ (morph f cond) A))
+                         (CExt {l} {l′} {k′} Γ A)
+                         f′
+  cond′ = map-prop-trunc cond₀ cond
 
 AsmType : {l l′ k′ : Level}
           ⦃ 𝕡 : PCA l ⦄
@@ -1438,9 +1485,9 @@ AsmType : {l l′ k′ : Level}
 AsmType {l} {l′} {k′} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ =
   record
    { Ty[_]   = λ Γ → Assembly.|X| Γ → Assembly {l} {l′} {l ⊔ k′} ⦃ 𝕡 ⦄
-   ; cext    = λ Γ U → CExt Γ U , CExt-restriction Γ U
-   ; reindex = {!!}
-   ; q⟨_,_⟩  = {!!}
+   ; cext    = λ Γ U → CExt {l} {l′} {k′} Γ U , CExt-restriction {l} {l′} {k′} Γ U
+   ; reindex = λ {Γ′} {Γ} m U → Creindex {l} {l′} {k′} Γ Γ′ m U
+   ; q⟨_,_⟩  = λ {Γ′} {Γ} f A → Cq {l} {l′} {k′} Γ Γ′ f A
    ; sq      = {!!}
    ; isPB    = {!!}
    }
