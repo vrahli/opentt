@@ -1439,6 +1439,30 @@ Creindex : {l l′ k′ : Level}
          → Assembly.|X| Δ → Assembly {l} {l′} {l ⊔ k′} ⦃ 𝕡 ⦄
 Creindex {l} {l′} {k′} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ Γ Δ m U δ = U (morphism.f m δ)
 
+-- λ b → ⟨ a (π₁ b) , π₂ b ⟩
+Cπ : {l : Level} ⦃ 𝕡 : PCA l ⦄ ⦃ c : Comb {l} ⦃ 𝕡 ⦄ ⦄ → |U| → |U|
+Cπ {l} ⦃ 𝕡 ⦄ ⦃ c ⦄ a = S·· (S·· (K· Pc) (S·· (K· a) π₁)) π₂
+
+app-Cπ : {l : Level} ⦃ 𝕡 : PCA l ⦄ ⦃ c : Comb {l} ⦃ 𝕡 ⦄ ⦄
+         (a b b₁ b₂ c : |U|)
+       → π₁ · b ≈ b₁
+       → π₂ · b ≈ b₂
+       → a · b₁ ≈ c
+       → (Cπ a) · b ≈ Pc·· c b₂
+app-Cπ {l} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ a b b₁ b₂ c b₁≡ b₂≡ c≡ =
+  app-S··
+    (S·· (K· Pc) (S·· (K· a) π₁)) π₂ b (Pc· c) b₂ (Pc·· c b₂)
+    (app-S··
+      (K· Pc) (S·· (K· a) π₁) b Pc c (Pc· c)
+      (app-K· Pc b)
+      (app-S··
+        (K· a) π₁ b a b₁ c
+        (app-K· a b)
+        b₁≡ c≡)
+      (app-Pc c))
+    b₂≡
+    (app-Pc· c b₂)
+
 Cq : {l l′ k′ : Level}
      ⦃ 𝕡 : PCA l ⦄
      ⦃ 𝕔 : Comb {l} ⦃ 𝕡 ⦄ ⦄
@@ -1459,7 +1483,7 @@ Cq {l} {l′} {k′} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ Γ Δ (morph f cond) A =
                        (CExt {l} {l′} {k′} Γ A)
                        f′
   cond₀ (a , c) =
-    {!!} , -- λ b → ⟨ a (π₁ b) , π₂ b ⟩ -- how do we know that (π₁ b), for example, is defined?
+    Cπ a ,
     λ x@(δ , u) b b⊩x →
       rec-prop-trunc
         squash₁
@@ -1467,7 +1491,7 @@ Cq {l} {l′} {k′} ⦃ 𝕡 ⦄ ⦃ 𝕔 ⦄ Γ Δ (morph f cond) A =
           map-prop-trunc
             (λ (c₁ , c₁≡ , ⊩c₁) →
               Pc·· c₁ b₁  ,
-              {!!} ,
+              app-Cπ a b a₁ b₁ c₁ a≡ b≡ c₁≡ ,
               ∣ c₁ , b₁ , π₁-pair c₁ b₁ , π₂-pair c₁ b₁ , ⊩c₁ , ⊩b ∣₁)
             (c δ a₁ ⊩a))
         b⊩x
