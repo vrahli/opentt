@@ -8,7 +8,7 @@ open import Cubical.Foundations.Prelude
   using (refl ; sym ; subst ; cong ; congS ; cong₂ ; funExt ; isProp ; isSet ; transport ; Square ; _∙_ ;
          isProp→isSet ; step-≡ ; _≡⟨⟩_ ; _∎ ; isContr)
 open import Cubical.Foundations.HLevels
-  using (isSetRetract ; isSetΣ ; isSet× ; isSet→ ; isSetΠ ; isSet→isGroupoid)
+  using (isSetRetract ; isSetΣ ; isSet× ; isSet→ ; isSetΠ ; isSet→isGroupoid ; hSet)
 open import Cubical.Categories.Category.Base
   using (Category ; _^op ; _[_,_])
 open import Cubical.Categories.Limits.Terminal
